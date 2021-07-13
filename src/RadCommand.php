@@ -90,7 +90,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
 
     public static function getSubscribedServices(): array
     {
-        return self::invokeServices();
+        return \array_values(self::invokeServices());
     }
 
     /**
@@ -192,10 +192,6 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!\is_callable($this)) {
-            throw new \LogicException(\sprintf('"%s" must implement __invoke() to use %s.', static::class, self::class));
-        }
-
         $parameters = self::invokeArgumentFactories($input, $output);
 
         foreach (self::invokeServices() as $service) {
@@ -251,7 +247,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
                     $name = $type->getName();
 
                     if ($type->isBuiltin()) {
-                        throw new \LogicException(\sprintf('"%s::__invoke()" cannot accept built-in parameter: %s (%s).', static::class, $parameter->getName(), $name));
+                        throw new \LogicException(\sprintf('"%s::__invoke()" cannot accept built-in parameter: $%s (%s).', static::class, $parameter->getName(), $name));
                     }
 
                     if (\is_a($name, InputInterface::class, true)) {

@@ -35,12 +35,13 @@ use Zenstruck\RadCommand\IO;
  */
 final class FullConfigurationCommand extends RadCommand
 {
-    public function __invoke(IO $io, InputInterface $input, OutputInterface $output, StyleInterface $style)
+    public function __invoke(IO $io, InputInterface $input, OutputInterface $output, StyleInterface $style, $empty)
     {
         $io->writeln(\sprintf('$io: %s', \get_class($io)));
         $io->writeln(\sprintf('$input: %s', \get_class($input)));
         $io->writeln(\sprintf('$output: %s', \get_class($output)));
         $io->writeln(\sprintf('$style: %s', \get_class($style)));
+        $io->writeln(\sprintf('$empty: %s', \get_class($empty)));
 
         foreach ($io->getArguments() as $name => $argument) {
             $io->writeln(\sprintf('%s: %s', $name, \json_encode($argument)));
@@ -49,6 +50,12 @@ final class FullConfigurationCommand extends RadCommand
         foreach ($io->getOptions() as $name => $option) {
             $io->writeln(\sprintf('%s: %s', $name, \json_encode($option)));
         }
+
+        foreach ($io->progressIterate(\range(1, 10)) as $step) {
+            // noop
+        }
+
+        $io->writeln('end of progressbar');
 
         $io->success('Done!');
     }
