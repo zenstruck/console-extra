@@ -7,6 +7,7 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,14 +32,19 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
 
     /**
      * Auto-generates the command name from either a @command tag or
-     * the command class. Command aliases can be added with the @alias
-     * tag.
+     * the command class.
      *
      * 1. Use @command tag (ie @command app:user:report) for the command
-     *    name. If there are multiple, subsequent tags are used as aliases.
+     *    name.
      * 2. If no @command tag, use the class name to auto-generate the
      *    command name (ie GenerateUserReportCommand => app:generate-user-report).
-     * 3. @alias tags (ie @alias user-report) add aliases for the command.
+     *
+     * You can opt-out of this behaviour by setting your command name
+     * in one of the traditional ways:
+     *
+     * 1. Set the {@see Command::$defaultName} property.
+     * 2. Override the {@see Command::getDefaultName()} method.
+     * 3. Use the {@see AsCommand} attribute.
      */
     public static function getDefaultName(): string
     {
@@ -47,23 +53,28 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
         }
 
         if (($docblock = self::classDocblock())->hasTag('command')) {
-            $name = \implode('|', $docblock->getTagsByName('command'));
-        } else {
-            $name = u((new \ReflectionClass(static::class))->getShortName())
-                ->snake()
-                ->replace('_', '-')
-                ->beforeLast('-command')
-                ->prepend('app:')
-                ->toString()
-            ;
+            return $docblock->getTagsByName('command')[0];
         }
 
-        return \implode('|', \array_merge([$name], $docblock->getTagsByName('alias')));
+        return u((new \ReflectionClass(static::class))->getShortName())
+            ->snake()
+            ->replace('_', '-')
+            ->beforeLast('-command')
+            ->prepend('app:')
+            ->toString()
+        ;
     }
 
     /**
      * Uses the command class' docblock "summary" to auto-generate
      * the command description.
+     *
+     * You can opt-out of this behaviour by setting your command name
+     * in one of the traditional ways:
+     *
+     * 1. Set the {@see Command::$defaultDescription)} property.
+     * 2. Override {@see Command::getDefaultDescription()} method.
+     * 3. Use the {@see AsCommand} attribute.
      */
     public static function getDefaultDescription(): ?string
     {
@@ -122,12 +133,21 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
     /**
      * Uses the command class' docblock "description" to auto-generate
      * the command help.
+     *
+     * Opt-out by configuring your command's help in the traditional
+     * way.
      */
     public function getHelp(): string
     {
         return parent::getHelp() ?: self::classDocblock()->getDescription()->render();
     }
 
+    /**
+     * Required to auto-generate the command description from the
+     * docblock in symfony/console < 5.3.
+     *
+     * @see getDefaultDescription()
+     */
     public function getDescription(): string
     {
         return parent::getDescription() ?: (string) self::getDefaultDescription();
@@ -136,6 +156,9 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
     /**
      * Use command class' docblock @argument/@option tags to auto-configure
      * options/arguments.
+     *
+     * Opt-out of this behaviour by overriding this method and configuring
+     * your options/arguments in the traditional way.
      *
      * @argument argument-name Argument Description
      * @option option-name Option Description
@@ -273,7 +296,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
         }
 
         // try matching with quoted default
-        if (\preg_match('#^([\w\-]+)\=["\'](.+)["\'](\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $tag, $matches)) {
             return [
                 $matches[1], // name
                 InputArgument::OPTIONAL, // mode
