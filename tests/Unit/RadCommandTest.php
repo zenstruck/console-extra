@@ -17,6 +17,7 @@ final class RadCommandTest extends TestCase
     public function default_name_is_parsed_from_class_name(): void
     {
         $this->assertSame('app:full-configuration', FullConfigurationCommand::getDefaultName());
+        $this->assertSame('app:full-configuration', (new FullConfigurationCommand())->getName());
     }
 
     /**
@@ -25,6 +26,7 @@ final class RadCommandTest extends TestCase
     public function default_description_is_parsed_from_docblock(): void
     {
         $this->assertSame('This is the command description.', FullConfigurationCommand::getDefaultDescription());
+        $this->assertSame('This is the command description.', (new FullConfigurationCommand())->getDescription());
     }
 
     /**

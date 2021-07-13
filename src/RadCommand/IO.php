@@ -61,12 +61,12 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getFirstArgument();
     }
 
-    public function hasParameterOption($values, bool $onlyParams = false): bool
+    public function hasParameterOption($values, $onlyParams = false): bool
     {
         return $this->input->hasParameterOption($values, $onlyParams);
     }
 
-    public function getParameterOption($values, $default = false, bool $onlyParams = false)
+    public function getParameterOption($values, $default = false, $onlyParams = false)
     {
         return $this->input->getParameterOption($values, $default, $onlyParams);
     }
@@ -86,12 +86,12 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getArguments();
     }
 
-    public function getArgument(string $name)
+    public function getArgument($name)
     {
         return $this->input->getArgument($name);
     }
 
-    public function setArgument(string $name, $value): void
+    public function setArgument($name, $value): void
     {
         $this->input->setArgument($name, $value);
     }
@@ -106,17 +106,17 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getOptions();
     }
 
-    public function getOption(string $name)
+    public function getOption($name)
     {
         return $this->input->getOption($name);
     }
 
-    public function setOption(string $name, $value): void
+    public function setOption($name, $value): void
     {
         $this->input->setOption($name, $value);
     }
 
-    public function hasOption(string $name): bool
+    public function hasOption($name): bool
     {
         return $this->input->hasOption($name);
     }
@@ -126,7 +126,7 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->isInteractive();
     }
 
-    public function setInteractive(bool $interactive): void
+    public function setInteractive($interactive): void
     {
         $this->input->setInteractive($interactive);
     }

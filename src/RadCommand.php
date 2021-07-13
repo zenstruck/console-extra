@@ -17,7 +17,7 @@ use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Zenstruck\Callback\Parameter;
 use Zenstruck\Callback\ValueFactory;
 use Zenstruck\RadCommand\IO;
-use function Symfony\Component\String\s;
+use function Symfony\Component\String\u;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -49,7 +49,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
         if (($docblock = self::classDocblock())->hasTag('command')) {
             $name = \implode('|', $docblock->getTagsByName('command'));
         } else {
-            $name = s((new \ReflectionClass(static::class))->getShortName())
+            $name = u((new \ReflectionClass(static::class))->getShortName())
                 ->snake()
                 ->replace('_', '-')
                 ->beforeLast('-command')
@@ -67,12 +67,12 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
      */
     public static function getDefaultDescription(): ?string
     {
-        if ($description = parent::getDefaultDescription()) {
+        if (\method_exists(Command::class, 'getDefaultDescription') && $description = parent::getDefaultDescription()) {
             return $description;
         }
 
         $summary = self::classDocblock()->getSummary();
-        $description = s($summary)->replace("\n", ' ');
+        $description = u($summary)->replace("\n", ' ');
 
         return $description->isEmpty() ? null : $description->toString();
     }
@@ -128,10 +128,10 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
         return parent::getHelp() ?: self::classDocblock()->getDescription()->render();
     }
 
-    /**
-     * Use command class' docblock @argument/@option tags to auto-configure
-     * options/arguments.
-     */
+    public function getDescription(): string
+    {
+        return parent::getDescription() ?: (string) self::getDefaultDescription();
+    }
 
     /**
      * Use command class' docblock @argument/@option tags to auto-configure
