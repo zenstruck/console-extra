@@ -4,6 +4,8 @@ namespace Zenstruck\RadCommand\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Console\Test\TestCommand;
+use Zenstruck\RadCommand;
+use Zenstruck\RadCommand\Tests\Fixture\Command\CustomIO;
 use Zenstruck\RadCommand\Tests\Fixture\Command\FullConfigurationCommand;
 
 /**
@@ -141,6 +143,31 @@ final class RadCommandTest extends TestCase
             ->assertOutputContains('option3: "default"')
             ->assertOutputContains('option4: "default with space"')
             ->assertOutputContains('option5: []')
+            ->assertOutputContains('Done!')
         ;
+    }
+
+    /**
+     * @test
+     */
+    public function can_customize_the_io_factories(): void
+    {
+        RadCommand::addArgumentFactory(
+            CustomIO::SUPPORTED_TYPES,
+            static fn($input, $output) => new CustomIO($input, $output)
+        );
+
+        TestCommand::for(new FullConfigurationCommand())
+            ->addArgument('value1')
+            ->execute()
+            ->assertSuccessful()
+            ->assertOutputNotContains('Done!')
+            ->assertOutputContains('Override Success')
+        ;
+
+        // reset
+        $prop = (new \ReflectionClass(RadCommand::class))->getProperty('argumentFactories');
+        $prop->setAccessible(true);
+        $prop->setValue([]);
     }
 }

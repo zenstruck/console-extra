@@ -49,5 +49,7 @@ final class FullConfigurationCommand extends RadCommand
         foreach ($io->getOptions() as $name => $option) {
             $io->writeln(\sprintf('%s: %s', $name, \json_encode($option)));
         }
+
+        $io->success('Done!');
     }
 }
