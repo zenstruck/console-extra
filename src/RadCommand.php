@@ -2,21 +2,17 @@
 
 namespace Zenstruck;
 
-use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlockFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Zenstruck\Callback\Parameter;
 use Zenstruck\Callback\ValueFactory;
+use Zenstruck\RadCommand\CommandDocblock;
 use Zenstruck\RadCommand\IO;
 use function Symfony\Component\String\u;
 
@@ -52,11 +48,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
             return $name;
         }
 
-        if (($docblock = self::classDocblock())->hasTag('command')) {
-            return $docblock->getTagsByName('command')[0];
-        }
-
-        return u((new \ReflectionClass(static::class))->getShortName())
+        return self::docblock()->name() ?? u((new \ReflectionClass(static::class))->getShortName())
             ->snake()
             ->replace('_', '-')
             ->beforeLast('-command')
@@ -82,10 +74,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
             return $description;
         }
 
-        $summary = self::classDocblock()->getSummary();
-        $description = u($summary)->replace("\n", ' ');
-
-        return $description->isEmpty() ? null : $description->toString();
+        return self::docblock()->description();
     }
 
     public static function getSubscribedServices(): array
@@ -139,7 +128,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
      */
     public function getHelp(): string
     {
-        return parent::getHelp() ?: self::classDocblock()->getDescription()->render();
+        return parent::getHelp() ?: self::docblock()->help();
     }
 
     /**
@@ -179,14 +168,14 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
      */
     protected function configure(): void
     {
-        $docblock = self::classDocblock();
+        $docblock = self::docblock();
 
-        foreach ($docblock->getTagsByName('argument') as $tag) {
-            $this->addArgument(...self::parseArgumentTag($tag));
+        foreach ($docblock->arguments() as $argument) {
+            $this->addArgument(...$argument);
         }
 
-        foreach ($docblock->getTagsByName('option') as $tag) {
-            $this->addOption(...self::parseOptionTag($tag));
+        foreach ($docblock->options() as $option) {
+            $this->addOption(...$option);
         }
     }
 
@@ -278,82 +267,9 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
         return $this->container;
     }
 
-    private static function parseArgumentTag(Tag $tag): array
+    private static function docblock(): CommandDocblock
     {
-        if (\preg_match('#^(\?)?([\w\-]+)(=([\w\-]+))?(\s+(.+))?$#', $tag, $matches)) {
-            $default = $matches[4] ?? null;
-
-            return [
-                $matches[2], // name
-                $matches[1] || $default ? InputArgument::OPTIONAL : InputArgument::REQUIRED, // mode
-                $matches[6] ?? '', // description
-                $default ?: null, // default
-            ];
-        }
-
-        // try matching with quoted default
-        if (\preg_match('#^([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $tag, $matches)) {
-            return [
-                $matches[1], // name
-                InputArgument::OPTIONAL, // mode
-                $matches[4] ?? '', // description
-                $matches[2], // default
-            ];
-        }
-
-        // try matching array argument
-        if (\preg_match('#^(\?)?([\w\-]+)\[\](\s+(.+))?$#', $tag, $matches)) {
-            return [
-                $matches[2], // name
-                InputArgument::IS_ARRAY | ($matches[1] ? InputArgument::OPTIONAL : InputArgument::REQUIRED), // mode
-                $matches[4] ?? '', // description
-            ];
-        }
-
-        throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), static::class));
-    }
-
-    private static function parseOptionTag(Tag $tag): array
-    {
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)(=([\w\-]+)?)?(\s+(.+))?$#', $tag, $matches)) {
-            $default = $matches[5] ?? null;
-
-            return [
-                $matches[3], // name
-                $matches[2] ?: null, // shortcut
-                $matches[4] ?? null ? InputOption::VALUE_REQUIRED : InputOption::VALUE_NONE, // mode
-                $matches[7] ?? '', // description
-                $default ?: null, // default
-            ];
-        }
-
-        // try matching with quoted default
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $tag, $matches)) {
-            return [
-                $matches[3], // name
-                $matches[2] ?: null, // shortcut
-                InputOption::VALUE_REQUIRED, // mode
-                $matches[6] ?? '', // description
-                $matches[4], // default
-            ];
-        }
-
-        // try matching array option
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)\[\](\s+(.+))?$#', $tag, $matches)) {
-            return [
-                $matches[3], // name
-                $matches[2] ?: null, // shortcut
-                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, // mode
-                $matches[5] ?? '', // description
-            ];
-        }
-
-        throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), static::class));
-    }
-
-    private static function classDocblock(): DocBlock
-    {
-        return DocBlockFactory::createInstance()->create((new \ReflectionClass(static::class))->getDocComment());
+        return new CommandDocblock(static::class);
     }
 
     /**

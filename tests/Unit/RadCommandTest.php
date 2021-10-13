@@ -61,6 +61,8 @@ final class RadCommandTest extends TestCase
 
         multiple lines.
         EOF, (new FullConfigurationCommand())->getHelp());
+
+        $this->assertSame('', (new CommandTagCommand())->getHelp());
     }
 
     /**
