@@ -66,6 +66,9 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->hasParameterOption($values, $onlyParams);
     }
 
+    /**
+     * @return mixed
+     */
     public function getParameterOption($values, $default = false, $onlyParams = false)
     {
         return $this->input->getParameterOption($values, $default, $onlyParams);
@@ -86,6 +89,9 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getArguments();
     }
 
+    /**
+     * @return mixed
+     */
     public function getArgument($name)
     {
         return $this->input->getArgument($name);
@@ -106,6 +112,9 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getOptions();
     }
 
+    /**
+     * @return mixed
+     */
     public function getOption($name)
     {
         return $this->input->getOption($name);
