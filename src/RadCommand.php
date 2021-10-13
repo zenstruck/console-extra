@@ -12,9 +12,8 @@ use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Zenstruck\Callback\Parameter;
 use Zenstruck\Callback\ValueFactory;
-use Zenstruck\RadCommand\CommandDocblock;
+use Zenstruck\RadCommand\Configuration;
 use Zenstruck\RadCommand\IO;
-use function Symfony\Component\String\u;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -44,17 +43,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
      */
     public static function getDefaultName(): string
     {
-        if ($name = parent::getDefaultName()) {
-            return $name;
-        }
-
-        return self::docblock()->name() ?? u((new \ReflectionClass(static::class))->getShortName())
-            ->snake()
-            ->replace('_', '-')
-            ->beforeLast('-command')
-            ->prepend('app:')
-            ->toString()
-        ;
+        return parent::getDefaultName() ?? self::configuration()->name();
     }
 
     /**
@@ -74,7 +63,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
             return $description;
         }
 
-        return self::docblock()->description();
+        return self::configuration()->description();
     }
 
     public static function getSubscribedServices(): array
@@ -128,7 +117,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
      */
     public function getHelp(): string
     {
-        return parent::getHelp() ?: self::docblock()->help();
+        return parent::getHelp() ?: (string) self::configuration()->help();
     }
 
     /**
@@ -168,7 +157,7 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
      */
     protected function configure(): void
     {
-        $docblock = self::docblock();
+        $docblock = self::configuration();
 
         foreach ($docblock->arguments() as $argument) {
             $this->addArgument(...$argument);
@@ -267,9 +256,9 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
         return $this->container;
     }
 
-    private static function docblock(): CommandDocblock
+    private static function configuration(): Configuration
     {
-        return new CommandDocblock(static::class);
+        return Configuration::create(static::class);
     }
 
     /**

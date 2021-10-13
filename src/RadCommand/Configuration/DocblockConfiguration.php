@@ -1,12 +1,13 @@
 <?php
 
-namespace Zenstruck\RadCommand;
+namespace Zenstruck\RadCommand\Configuration;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Zenstruck\RadCommand\Configuration;
 use function Symfony\Component\String\u;
 
 /**
@@ -14,17 +15,15 @@ use function Symfony\Component\String\u;
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class CommandDocblock
+final class DocblockConfiguration extends Configuration
 {
-    /** @var array<class-string, DocBlock> */
-    private static array $docblocks = [];
     private static ?DocBlockFactory $factory;
 
-    private string $class;
+    private DocBlock $docblock;
 
-    public function __construct(string $class)
+    public static function isSupported(): bool
     {
-        $this->class = $class;
+        return \class_exists(DocBlock::class);
     }
 
     public function name(): ?string
@@ -98,7 +97,7 @@ final class CommandDocblock
             ];
         }
 
-        throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class));
+        throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
     }
 
     private function parseOptionTag(Tag $tag): array
@@ -136,7 +135,7 @@ final class CommandDocblock
             ];
         }
 
-        throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class));
+        throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
     }
 
     private static function factory(): DocBlockFactory
@@ -146,8 +145,6 @@ final class CommandDocblock
 
     private function docblock(): DocBlock
     {
-        return self::$docblocks[$this->class] ??= self::factory()
-            ->create((new \ReflectionClass($this->class))->getDocComment())
-        ;
+        return $this->docblock ??= self::factory()->create($this->class()->getDocComment());
     }
 }
