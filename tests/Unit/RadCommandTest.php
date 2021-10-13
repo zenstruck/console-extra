@@ -327,4 +327,20 @@ final class RadCommandTest extends TestCase
 
         new MalformedOptionCommand();
     }
+
+    /**
+     * @test
+     */
+    public function can_add_arguments_and_options_to_command_tag(): void
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @test
+     */
+    public function malformed_command_tag(): void
+    {
+        $this->markTestIncomplete();
+    }
 }
