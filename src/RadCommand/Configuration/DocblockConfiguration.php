@@ -3,7 +3,6 @@
 namespace Zenstruck\RadCommand\Configuration;
 
 use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -45,29 +44,31 @@ final class DocblockConfiguration extends Configuration
         return $this->docblock()->getDescription() ?: null;
     }
 
-    /**
-     * @return iterable<array>
-     */
     public function arguments(): iterable
     {
         foreach ($this->docblock()->getTagsByName('argument') as $tag) {
-            yield $this->parseArgumentTag($tag);
+            try {
+                yield self::parseArgument($tag);
+            } catch (\LogicException $e) {
+                throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
+            }
         }
     }
 
-    /**
-     * @return iterable<array>
-     */
     public function options(): iterable
     {
         foreach ($this->docblock()->getTagsByName('option') as $tag) {
-            yield $this->parseOptionTag($tag);
+            try {
+                yield self::parseOption($tag);
+            } catch (\LogicException $e) {
+                throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
+            }
         }
     }
 
-    private function parseArgumentTag(Tag $tag): array
+    private static function parseArgument(string $value): array
     {
-        if (\preg_match('#^(\?)?([\w\-]+)(=([\w\-]+))?(\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^(\?)?([\w\-]+)(=([\w\-]+))?(\s+(.+))?$#', $value, $matches)) {
             $default = $matches[4] ?? null;
 
             return [
@@ -79,7 +80,7 @@ final class DocblockConfiguration extends Configuration
         }
 
         // try matching with quoted default
-        if (\preg_match('#^([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $value, $matches)) {
             return [
                 $matches[1], // name
                 InputArgument::OPTIONAL, // mode
@@ -89,7 +90,7 @@ final class DocblockConfiguration extends Configuration
         }
 
         // try matching array argument
-        if (\preg_match('#^(\?)?([\w\-]+)\[\](\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^(\?)?([\w\-]+)\[\](\s+(.+))?$#', $value, $matches)) {
             return [
                 $matches[2], // name
                 InputArgument::IS_ARRAY | ($matches[1] ? InputArgument::OPTIONAL : InputArgument::REQUIRED), // mode
@@ -97,12 +98,12 @@ final class DocblockConfiguration extends Configuration
             ];
         }
 
-        throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
+        throw new \LogicException(\sprintf('Malformed argument: "%s".', $value));
     }
 
-    private function parseOptionTag(Tag $tag): array
+    private static function parseOption(string $value): array
     {
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)(=([\w\-]+)?)?(\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)(=([\w\-]+)?)?(\s+(.+))?$#', $value, $matches)) {
             $default = $matches[5] ?? null;
 
             return [
@@ -115,7 +116,7 @@ final class DocblockConfiguration extends Configuration
         }
 
         // try matching with quoted default
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)=["\'](.+)["\'](\s+(.+))?$#', $value, $matches)) {
             return [
                 $matches[3], // name
                 $matches[2] ?: null, // shortcut
@@ -126,7 +127,7 @@ final class DocblockConfiguration extends Configuration
         }
 
         // try matching array option
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)\[\](\s+(.+))?$#', $tag, $matches)) {
+        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)\[\](\s+(.+))?$#', $value, $matches)) {
             return [
                 $matches[3], // name
                 $matches[2] ?: null, // shortcut
@@ -135,7 +136,7 @@ final class DocblockConfiguration extends Configuration
             ];
         }
 
-        throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
+        throw new \LogicException(\sprintf('Malformed option: "%s".', $value));
     }
 
     private static function factory(): DocBlockFactory
