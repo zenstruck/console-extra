@@ -132,11 +132,19 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
     }
 
     /**
-     * Use command class' docblock @argument/@option tags to auto-configure
-     * options/arguments.
+     * Use command class' docblock @argument/@option/@command tags to
+     * auto-configure options/arguments.
      *
      * Opt-out of this behaviour by overriding this method and configuring
      * your options/arguments in the traditional way.
+     *
+     * For simple arguments/options, you can add to the @command tag
+     * (descriptions cannot be added):
+     *
+     * @command app:user:report arg1 ?arg2 arg3=default arg4="default with space" ?arg5[] --option1 --option2= --option3=default --option4="default with space" --o|option5[]
+     *
+     * For commands with many arguments/options or if you require descriptions,
+     * use @argument/@option tags:
      *
      * @argument argument-name Argument Description
      * @option option-name Option Description

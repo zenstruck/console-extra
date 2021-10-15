@@ -3,6 +3,7 @@
 namespace Zenstruck\RadCommand\Configuration;
 
 use phpDocumentor\Reflection\DocBlock;
+use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,6 +20,7 @@ final class DocblockConfiguration extends Configuration
     private static ?DocBlockFactory $factory;
 
     private DocBlock $docblock;
+    private array $command;
 
     public static function isSupported(): bool
     {
@@ -27,11 +29,7 @@ final class DocblockConfiguration extends Configuration
 
     public function name(): ?string
     {
-        if (!$this->docblock()->hasTag('command')) {
-            return null;
-        }
-
-        return $this->docblock()->getTagsByName('command')[0];
+        return $this->command()[0] ?? null;
     }
 
     public function description(): ?string
@@ -46,24 +44,81 @@ final class DocblockConfiguration extends Configuration
 
     public function arguments(): iterable
     {
+        $command = $this->command();
+
+        \array_shift($command);
+
+        // parse arguments from @command tag
+        foreach ($command as $item) {
+            if (str_starts_with($item, '--')) {
+                continue;
+            }
+
+            try {
+                yield self::parseArgument($item);
+            } catch (\LogicException $e) {
+                throw new \LogicException(\sprintf('"@command" tag has a malformed argument ("%s") in "%s".', $item, $this->class()->name));
+            }
+        }
+
+        // parse @argument tags
         foreach ($this->docblock()->getTagsByName('argument') as $tag) {
             try {
                 yield self::parseArgument($tag);
             } catch (\LogicException $e) {
-                throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
+                throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->name));
             }
         }
     }
 
     public function options(): iterable
     {
+        $command = $this->command();
+
+        \array_shift($command);
+
+        // parse options from @command tag
+        foreach ($command as $item) {
+            if (!str_starts_with($item, '--')) {
+                continue;
+            }
+
+            try {
+                yield self::parseOption(\mb_substr($item, 2));
+            } catch (\LogicException $e) {
+                throw new \LogicException(\sprintf('"@command" tag has a malformed option ("%s") in "%s".', $item, $this->class()->name));
+            }
+        }
+
+        // parse @option tags
         foreach ($this->docblock()->getTagsByName('option') as $tag) {
             try {
                 yield self::parseOption($tag);
             } catch (\LogicException $e) {
-                throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->getName()));
+                throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->name));
             }
         }
+    }
+
+    private function command(): array
+    {
+        if (isset($this->command)) {
+            return $this->command;
+        }
+
+        if (empty($tags = $this->docblock()->getTagsByName('command'))) {
+            return $this->command = [];
+        }
+
+        if (\count($tags) > 1) {
+            throw new \LogicException(\sprintf('"@command" tag can only be used once in "%s".', $this->class()->name));
+        }
+
+        if (!\preg_match_all('#[\w:?\-|=\[\]]+("[^"]*")?#', $tags[0], $matches)) {
+            throw new \LogicException(\sprintf('"@command" tag must have a value in "%s".', $this->class()->name));
+        }
+
+        return $this->command = $matches[0];
     }
 
     private static function parseArgument(string $value): array

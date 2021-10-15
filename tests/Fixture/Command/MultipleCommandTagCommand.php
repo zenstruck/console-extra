@@ -5,10 +5,11 @@ namespace Zenstruck\RadCommand\Tests\Fixture\Command;
 use Zenstruck\RadCommand;
 
 /**
- * @command
+ * @command first
+ * @command second
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class MalformedCommandTagCommand extends RadCommand
+final class MultipleCommandTagCommand extends RadCommand
 {
 }
