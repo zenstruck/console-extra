@@ -22,13 +22,13 @@ use Zenstruck\RadCommand\IO;
  * @argument arg1 First argument is required
  * @argument ?arg2 Second argument is optional
  * @argument arg3=default Third argument is optional with a default value
- * @argument arg4="default with space" Forth argument is optional with a default value (with spaces)
+ * @argument arg4="default with space" Forth argument is "optional" with a default value (with spaces)
  * @argument ?arg5[] Fifth argument is an optional array
  *
  * @option option1 First option (no value)
  * @option option2= Second option (value required)
  * @option option3=default Third option with default value
- * @option option4="default with space" Forth option with default value (with spaces)
+ * @option option4="default with space" Forth option with "default" value (with spaces)
  * @option o|option5[] Fifth option is an array with a shortcut (-o)
  *
  * @author Kevin Bond <kevinbond@gmail.com>

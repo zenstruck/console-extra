@@ -98,7 +98,7 @@ final class RadCommandTest extends TestCase
         $arg = $definition->getArgument('arg4');
         $this->assertFalse($arg->isRequired());
         $this->assertFalse($arg->isArray());
-        $this->assertSame('Forth argument is optional with a default value (with spaces)', $arg->getDescription());
+        $this->assertSame('Forth argument is "optional" with a default value (with spaces)', $arg->getDescription());
         $this->assertSame('default with space', $arg->getDefault());
 
         $arg = $definition->getArgument('arg5');
@@ -131,7 +131,7 @@ final class RadCommandTest extends TestCase
         $option = $definition->getOption('option4');
         $this->assertFalse($option->isArray());
         $this->assertSame('default with space', $option->getDefault());
-        $this->assertSame('Forth option with default value (with spaces)', $option->getDescription());
+        $this->assertSame('Forth option with "default" value (with spaces)', $option->getDescription());
         $this->assertNull($option->getShortcut());
         $this->assertTrue($option->isValueRequired());
 
