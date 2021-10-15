@@ -101,6 +101,11 @@ final class DocblockConfiguration extends Configuration
         }
     }
 
+    public function hidden(): bool
+    {
+        return $this->docblock()->hasTag('hidden');
+    }
+
     private function command(): array
     {
         if (isset($this->command)) {

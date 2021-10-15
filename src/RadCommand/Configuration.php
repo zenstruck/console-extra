@@ -57,6 +57,11 @@ abstract class Configuration
         return [];
     }
 
+    public function hidden(): bool
+    {
+        return false;
+    }
+
     final protected function class(): \ReflectionClass
     {
         return $this->class;

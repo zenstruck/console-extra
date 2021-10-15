@@ -69,4 +69,15 @@ final class ChainConfiguration extends Configuration
             yield from $configuration->options();
         }
     }
+
+    public function hidden(): bool
+    {
+        foreach ($this->configurations as $configuration) {
+            if ($configuration->hidden()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Zenstruck\RadCommand\Tests\Fixture\Command\CommandTagCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\CommandTagWithArgsCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\FullConfigurationCommand;
+use Zenstruck\RadCommand\Tests\Fixture\Command\HiddenCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedArgumentCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedCommandTagArgumentCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedCommandTagCommand;
@@ -292,5 +293,31 @@ final class DocblockConfigurationTest extends TestCase
         $this->expectExceptionMessage(\sprintf('"@command" tag has a malformed option ("--foo==bar") in "%s".', MalformedCommandTagOptionCommand::class));
 
         new MalformedCommandTagOptionCommand();
+    }
+
+    /**
+     * @test
+     */
+    public function can_mark_as_hidden_with_hidden_tag(): void
+    {
+        $this->assertFalse((new FullConfigurationCommand())->isHidden());
+
+        $command = new HiddenCommand();
+
+        $this->assertTrue($command->isHidden());
+        $this->assertSame('hidden:command', $command->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function hidden_command_is_lazy(): void
+    {
+        if (\method_exists(Command::class, 'getDefaultDescription')) {
+            // Symfony 5.3+ supports setting hidden this way
+            $this->assertSame('|hidden:command', HiddenCommand::getDefaultName());
+        } else {
+            $this->assertSame('hidden:command', HiddenCommand::getDefaultName());
+        }
     }
 }
