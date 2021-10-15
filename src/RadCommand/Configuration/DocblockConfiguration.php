@@ -136,7 +136,7 @@ final class DocblockConfiguration extends Configuration
         }
 
         // try matching with quoted default
-        if (\preg_match('#^([\w\-]+)=["\']([^"]*)["\'](\s+(.+))?$#', $value, $matches)) {
+        if (\preg_match('#^([\w\-]+)="([^"]*)"(\s+(.+))?$#', $value, $matches)) {
             return [
                 $matches[1], // name
                 InputArgument::OPTIONAL, // mode
@@ -172,7 +172,7 @@ final class DocblockConfiguration extends Configuration
         }
 
         // try matching with quoted default
-        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)=["\']([^"]*)["\'](\s+(.+))?$#', $value, $matches)) {
+        if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)="([^"]*)"(\s+(.+))?$#', $value, $matches)) {
             return [
                 $matches[3], // name
                 $matches[2] ?: null, // shortcut
