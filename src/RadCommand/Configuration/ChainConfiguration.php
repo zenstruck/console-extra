@@ -56,14 +56,14 @@ final class ChainConfiguration extends Configuration
         return null;
     }
 
-    public function arguments(): iterable
+    public function arguments(): \Traversable
     {
         foreach ($this->configurations as $configuration) {
             yield from $configuration->arguments();
         }
     }
 
-    public function options(): iterable
+    public function options(): \Traversable
     {
         foreach ($this->configurations as $configuration) {
             yield from $configuration->options();
@@ -79,5 +79,12 @@ final class ChainConfiguration extends Configuration
         }
 
         return false;
+    }
+
+    public function aliases(): \Traversable
+    {
+        foreach ($this->configurations as $configuration) {
+            yield from $configuration->aliases();
+        }
     }
 }

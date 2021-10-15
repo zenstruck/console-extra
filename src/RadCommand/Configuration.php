@@ -2,6 +2,7 @@
 
 namespace Zenstruck\RadCommand;
 
+use Symfony\Component\Console\Command\Command;
 use Zenstruck\RadCommand\Configuration\ChainConfiguration;
 
 /**
@@ -13,6 +14,7 @@ abstract class Configuration
 {
     /** @var array<class-string, static> */
     private static array $instances = [];
+    private static bool $supportsLazy;
 
     private \ReflectionClass $class;
 
@@ -24,6 +26,12 @@ abstract class Configuration
     final public static function create(string $class): self
     {
         return self::$instances[$class] ??= new ChainConfiguration($class);
+    }
+
+    public static function supportsLazy(): bool
+    {
+        // only 53+ has this method and therefore supports lazy hidden/aliases
+        return self::$supportsLazy ??= \method_exists(Command::class, 'getDefaultDescription');
     }
 
     public function name(): ?string
@@ -42,24 +50,32 @@ abstract class Configuration
     }
 
     /**
-     * @return iterable<array>
+     * @return \Traversable<array>
      */
-    public function arguments(): iterable
+    public function arguments(): \Traversable
     {
-        return [];
+        return new \EmptyIterator();
     }
 
     /**
-     * @return iterable<array>
+     * @return \Traversable<array>
      */
-    public function options(): iterable
+    public function options(): \Traversable
     {
-        return [];
+        return new \EmptyIterator();
     }
 
     public function hidden(): bool
     {
         return false;
+    }
+
+    /**
+     * @return \Traversable<string>
+     */
+    public function aliases(): \Traversable
+    {
+        return new \EmptyIterator();
     }
 
     final protected function class(): \ReflectionClass

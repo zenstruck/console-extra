@@ -28,7 +28,14 @@ final class DocblockConfiguration extends Configuration
 
     public function name(): ?string
     {
-        return $this->command()[0] ?? null;
+        $name = $this->command()[0] ?? null;
+
+        if (!$name || self::supportsLazy()) {
+            // in 5.3+ let Symfony handle lazy aliases/hidden syntax
+            return $name;
+        }
+
+        return \explode('|', \ltrim($name, '|'))[0];
     }
 
     public function description(): ?string
@@ -41,7 +48,7 @@ final class DocblockConfiguration extends Configuration
         return $this->docblock()->getDescription() ?: null;
     }
 
-    public function arguments(): iterable
+    public function arguments(): \Traversable
     {
         $command = $this->command();
 
@@ -70,7 +77,7 @@ final class DocblockConfiguration extends Configuration
         }
     }
 
-    public function options(): iterable
+    public function options(): \Traversable
     {
         $command = $this->command();
 
@@ -103,7 +110,33 @@ final class DocblockConfiguration extends Configuration
 
     public function hidden(): bool
     {
-        return $this->docblock()->hasTag('hidden');
+        if ($this->docblock()->hasTag('hidden')) {
+            return true;
+        }
+
+        // in <5.3 if command name starts with "|", mark as lazy (ie "|my:command")
+        return !self::supportsLazy() && u($this->command()[0] ?? '')->startsWith('|');
+    }
+
+    public function aliases(): \Traversable
+    {
+        foreach ($this->docblock()->getTagsByName('alias') as $alias) {
+            yield (string) $alias;
+        }
+
+        if (self::supportsLazy()) {
+            // in 5.3+, let Symfony handle alias syntax
+            return;
+        }
+
+        // parse aliases from command name (ie "my:command|alias1|alias2")
+        $aliases = \explode('|', \ltrim($this->command()[0] ?? '', '|'));
+
+        \array_shift($aliases);
+
+        foreach (\array_filter($aliases) as $alias) {
+            yield $alias;
+        }
     }
 
     private function command(): array

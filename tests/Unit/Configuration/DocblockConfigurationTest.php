@@ -4,8 +4,11 @@ namespace Zenstruck\RadCommand\Tests\Unit\Configuration;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
+use Zenstruck\RadCommand\Configuration;
+use Zenstruck\RadCommand\Tests\Fixture\Command\AliasedCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\CommandTagCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\CommandTagWithArgsCommand;
+use Zenstruck\RadCommand\Tests\Fixture\Command\FullCommandTagCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\FullConfigurationCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\HiddenCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedArgumentCommand;
@@ -313,11 +316,69 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function hidden_command_is_lazy(): void
     {
-        if (\method_exists(Command::class, 'getDefaultDescription')) {
-            // Symfony 5.3+ supports setting hidden this way
+        if (Configuration::supportsLazy()) {
+            // Symfony 5.3+ supports setting hidden lazily
             $this->assertSame('|hidden:command', HiddenCommand::getDefaultName());
         } else {
             $this->assertSame('hidden:command', HiddenCommand::getDefaultName());
         }
+    }
+
+    /**
+     * @test
+     */
+    public function can_add_aliases_with_alias_tag(): void
+    {
+        $command = new AliasedCommand();
+
+        $this->assertSame('aliased:command', $command->getName());
+        $this->assertSame(['alias1', 'alias2'], $command->getAliases());
+    }
+
+    /**
+     * @test
+     */
+    public function aliased_command_is_lazy(): void
+    {
+        if (Configuration::supportsLazy()) {
+            // Symfony 5.3+ supports lazy aliases
+            $this->assertSame('aliased:command|alias1|alias2', AliasedCommand::getDefaultName());
+        } else {
+            $this->assertSame('aliased:command', AliasedCommand::getDefaultName());
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function fully_condensed_command_tag(): void
+    {
+        $command = new FullCommandTagCommand();
+
+        if (Configuration::supportsLazy()) {
+            // Symfony 5.3+ supports lazy
+            $this->assertSame('|kitchen:sink|alias1|alias2', $command::getDefaultName());
+        } else {
+            $this->assertSame('kitchen:sink', $command::getDefaultName());
+        }
+
+        $this->assertSame('kitchen:sink', $command->getName());
+        $this->assertTrue($command->isHidden());
+        $this->assertSame(['alias1', 'alias2'], $command->getAliases());
+
+        $definition = $command->getDefinition();
+
+        $arg = $definition->getArgument('arg');
+        $this->assertTrue($arg->isRequired());
+        $this->assertFalse($arg->isArray());
+        $this->assertSame('', $arg->getDescription());
+        $this->assertNull($arg->getDefault());
+
+        $option = $definition->getOption('option');
+        $this->assertFalse($option->isArray());
+        $this->assertFalse($option->getDefault());
+        $this->assertSame('', $option->getDescription());
+        $this->assertNull($option->getShortcut());
+        $this->assertFalse($option->isValueRequired());
     }
 }

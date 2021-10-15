@@ -45,11 +45,15 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
     {
         $name = parent::getDefaultName() ?? self::configuration()->name();
 
-        if ('|' !== $name[0] && self::supportsLazy() && self::configuration()->hidden()) {
+        if (!Configuration::supportsLazy()) {
+            return $name;
+        }
+
+        if ('|' !== $name[0] && self::configuration()->hidden()) {
             $name = '|'.$name;
         }
 
-        return $name;
+        return \implode('|', \array_merge([$name], \iterator_to_array(self::configuration()->aliases())));
     }
 
     /**
@@ -179,8 +183,12 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
             $this->addOption(...$option);
         }
 
-        if (!self::supportsLazy() && self::configuration()->hidden()) {
+        if (!Configuration::supportsLazy() && self::configuration()->hidden()) {
             $this->setHidden(true);
+        }
+
+        if (!Configuration::supportsLazy()) {
+            $this->setAliases(\iterator_to_array(self::configuration()->aliases()));
         }
     }
 
@@ -296,11 +304,5 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
             \array_keys($factories),
             $factories
         );
-    }
-
-    private static function supportsLazy(): bool
-    {
-        // only 53+ has this method and therefore supports lazy hidden/aliases
-        return \method_exists(Command::class, 'getDefaultDescription');
     }
 }
