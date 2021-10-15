@@ -3,7 +3,6 @@
 namespace Zenstruck\RadCommand\Configuration;
 
 use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlockFactory;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -50,7 +49,7 @@ final class DocblockConfiguration extends Configuration
 
         // parse arguments from @command tag
         foreach ($command as $item) {
-            if (str_starts_with($item, '--')) {
+            if (u($item)->startsWith('--')) {
                 continue;
             }
 
@@ -79,12 +78,14 @@ final class DocblockConfiguration extends Configuration
 
         // parse options from @command tag
         foreach ($command as $item) {
-            if (!str_starts_with($item, '--')) {
+            $item = u($item);
+
+            if (!$item->startsWith('--')) {
                 continue;
             }
 
             try {
-                yield self::parseOption(\mb_substr($item, 2));
+                yield self::parseOption($item->after('--'));
             } catch (\LogicException $e) {
                 throw new \LogicException(\sprintf('"@command" tag has a malformed option ("%s") in "%s".', $item, $this->class()->name));
             }
