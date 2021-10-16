@@ -17,7 +17,7 @@
         "symfony/dependency-injection": "^4.4|^5.0|^6.0",
         "symfony/polyfill-php80": "^1.15",
         "symfony/string": "^5.0|^6.0",
-        "zenstruck/callback": "^1.2"
+        "zenstruck/callback": "^1.4"
     },
     "require-dev": {
         "phpdocumentor/reflection-docblock": "^5.2",
