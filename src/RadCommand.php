@@ -291,7 +291,8 @@ abstract class RadCommand extends Command implements ServiceSubscriberInterface
     private static function invokeArgumentFactories(InputInterface $input, OutputInterface $output): array
     {
         $factories = \array_merge(
-            \array_fill_keys(IO::SUPPORTED_TYPES, static fn() => new IO($input, $output)),
+            \array_fill_keys(IO::SUPPORTED_TYPES, static fn(InputInterface $input, OutputInterface $output) => new IO($input, $output)),
+            [IO::class => static fn(InputInterface $input, OutputInterface $output, string $class) => new $class($input, $output)],
             self::$argumentFactories
         );
 

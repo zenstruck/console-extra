@@ -5,8 +5,7 @@ namespace Zenstruck\RadCommand\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Zenstruck\Console\Test\TestCommand;
-use Zenstruck\RadCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\CustomIO;
+use Zenstruck\RadCommand\Tests\Fixture\Command\CustomIOCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\FullConfigurationCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\InjectableServicesCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\InvalidInvokeReturnCommand;
@@ -59,23 +58,12 @@ final class RadCommandTest extends TestCase
      */
     public function can_customize_the_io_factories(): void
     {
-        RadCommand::addArgumentFactory(
-            CustomIO::SUPPORTED_TYPES,
-            static fn($input, $output) => new CustomIO($input, $output)
-        );
-
-        TestCommand::for(new FullConfigurationCommand())
-            ->addArgument('value1')
+        TestCommand::for(new CustomIOCommand())
             ->execute()
             ->assertSuccessful()
             ->assertOutputNotContains('Done!')
             ->assertOutputContains('Override Success')
         ;
-
-        // reset
-        $prop = (new \ReflectionClass(RadCommand::class))->getProperty('argumentFactories');
-        $prop->setAccessible(true);
-        $prop->setValue([]);
     }
 
     /**
