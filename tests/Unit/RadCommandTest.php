@@ -5,6 +5,8 @@ namespace Zenstruck\RadCommand\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Zenstruck\Console\Test\TestCommand;
+use Zenstruck\RadCommand;
+use Zenstruck\RadCommand\Tests\Fixture\Command\CustomIO;
 use Zenstruck\RadCommand\Tests\Fixture\Command\CustomIOCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\FullConfigurationCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\InjectableServicesCommand;
@@ -56,7 +58,7 @@ final class RadCommandTest extends TestCase
     /**
      * @test
      */
-    public function can_customize_the_io_factories(): void
+    public function can_use_a_custom_io_as_typehint(): void
     {
         TestCommand::for(new CustomIOCommand())
             ->execute()
@@ -64,6 +66,30 @@ final class RadCommandTest extends TestCase
             ->assertOutputNotContains('Done!')
             ->assertOutputContains('Override Success')
         ;
+    }
+
+    /**
+     * @test
+     */
+    public function can_customize_the_io_factories(): void
+    {
+        RadCommand::addArgumentFactory(
+            CustomIO::SUPPORTED_TYPES,
+            static fn($input, $output) => new CustomIO($input, $output)
+        );
+
+        TestCommand::for(new FullConfigurationCommand())
+            ->addArgument('value1')
+            ->execute()
+            ->assertSuccessful()
+            ->assertOutputNotContains('Done!')
+            ->assertOutputContains('Override Success')
+        ;
+
+        // reset
+        $prop = (new \ReflectionClass(RadCommand::class))->getProperty('argumentFactories');
+        $prop->setAccessible(true);
+        $prop->setValue([]);
     }
 
     /**
