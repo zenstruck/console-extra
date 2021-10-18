@@ -23,9 +23,9 @@ trait Invokable
             [
                 Parameter::typed(InputInterface::class, $input, Callback\Argument::EXACT),
                 Parameter::typed(OutputInterface::class, $output, Callback\Argument::EXACT),
+                Parameter::typed(StyleInterface::class, $io, Callback\Argument::EXACT),
+                Parameter::typed(IO::class, Parameter::factory(fn(string $class) => new $class($input, $output))),
                 Parameter::untyped($io),
-                Parameter::typed(IO::class, $io),
-                Parameter::typed(StyleInterface::class, $io),
             ],
             $this->invokeParameters()
         );

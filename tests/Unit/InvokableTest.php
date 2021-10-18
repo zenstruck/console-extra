@@ -14,6 +14,7 @@ use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\RadCommand\Invokable;
 use Zenstruck\RadCommand\IO;
 use Zenstruck\RadCommand\Tests\Fixture\Command\InvokableCommand;
+use Zenstruck\RadCommand\Tests\Fixture\CustomIO;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -109,6 +110,25 @@ final class InvokableTest extends TestCase
                 }
             })
             ->execute()
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function can_inject_custom_io(): void
+    {
+        TestCommand::for(
+            new class() extends InvokableCommand {
+                public function __invoke(CustomIO $io)
+                {
+                    $io->success('Success!');
+                }
+            })
+            ->execute()
+            ->assertSuccessful()
+            ->assertOutputNotContains('Success!')
+            ->assertOutputContains('OVERRIDE')
         ;
     }
 }
