@@ -4,9 +4,9 @@ namespace Zenstruck\RadCommand\Configuration;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Zenstruck\RadCommand\Configuration;
 use function Symfony\Component\String\u;
 
 /**
@@ -14,16 +14,32 @@ use function Symfony\Component\String\u;
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class DocblockConfiguration extends Configuration
+final class DocblockConfiguration
 {
-    private static ?DocBlockFactory $factory;
+    /** @var array<class-string, self> */
+    private static array $instances = [];
+    private static DocBlockFactory $factory;
+    private static bool $supportsLazy;
 
+    private \ReflectionClass $class;
     private DocBlock $docblock;
     private array $command;
 
-    public static function isSupported(): bool
+    private function __construct(string $class)
     {
-        return \class_exists(DocBlock::class);
+        $this->class = new \ReflectionClass($class);
+        $this->docblock = self::factory()->create($this->class->getDocComment() ?: ' '); // hack to allow empty docblock
+    }
+
+    public static function for(string $class): self
+    {
+        return self::$instances[$class] ??= new self($class);
+    }
+
+    public static function supportsLazy(): bool
+    {
+        // only 53+ has this method and therefore supports lazy hidden/aliases
+        return self::$supportsLazy ??= \method_exists(Command::class, 'getDefaultDescription');
     }
 
     public function name(): ?string
@@ -40,12 +56,12 @@ final class DocblockConfiguration extends Configuration
 
     public function description(): ?string
     {
-        return u($this->docblock()->getSummary())->replace("\n", ' ')->toString() ?: null;
+        return u($this->docblock->getSummary())->replace("\n", ' ')->toString() ?: null;
     }
 
     public function help(): ?string
     {
-        return $this->docblock()->getDescription() ?: null;
+        return $this->docblock->getDescription() ?: null;
     }
 
     public function arguments(): \Traversable
@@ -63,16 +79,16 @@ final class DocblockConfiguration extends Configuration
             try {
                 yield self::parseArgument($item);
             } catch (\LogicException $e) {
-                throw new \LogicException(\sprintf('"@command" tag has a malformed argument ("%s") in "%s".', $item, $this->class()->name));
+                throw new \LogicException(\sprintf('"@command" tag has a malformed argument ("%s") in "%s".', $item, $this->class->name));
             }
         }
 
         // parse @argument tags
-        foreach ($this->docblock()->getTagsByName('argument') as $tag) {
+        foreach ($this->docblock->getTagsByName('argument') as $tag) {
             try {
                 yield self::parseArgument($tag);
             } catch (\LogicException $e) {
-                throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->name));
+                throw new \LogicException(\sprintf('Argument tag "%s" on "%s" is malformed.', $tag->render(), $this->class->name));
             }
         }
     }
@@ -94,23 +110,23 @@ final class DocblockConfiguration extends Configuration
             try {
                 yield self::parseOption($item->after('--'));
             } catch (\LogicException $e) {
-                throw new \LogicException(\sprintf('"@command" tag has a malformed option ("%s") in "%s".', $item, $this->class()->name));
+                throw new \LogicException(\sprintf('"@command" tag has a malformed option ("%s") in "%s".', $item, $this->class->name));
             }
         }
 
         // parse @option tags
-        foreach ($this->docblock()->getTagsByName('option') as $tag) {
+        foreach ($this->docblock->getTagsByName('option') as $tag) {
             try {
                 yield self::parseOption($tag);
             } catch (\LogicException $e) {
-                throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class()->name));
+                throw new \LogicException(\sprintf('Option tag "%s" on "%s" is malformed.', $tag->render(), $this->class->name));
             }
         }
     }
 
     public function hidden(): bool
     {
-        if ($this->docblock()->hasTag('hidden')) {
+        if ($this->docblock->hasTag('hidden')) {
             return true;
         }
 
@@ -120,7 +136,7 @@ final class DocblockConfiguration extends Configuration
 
     public function aliases(): \Traversable
     {
-        foreach ($this->docblock()->getTagsByName('alias') as $alias) {
+        foreach ($this->docblock->getTagsByName('alias') as $alias) {
             yield (string) $alias;
         }
 
@@ -145,16 +161,16 @@ final class DocblockConfiguration extends Configuration
             return $this->command;
         }
 
-        if (empty($tags = $this->docblock()->getTagsByName('command'))) {
+        if (empty($tags = $this->docblock->getTagsByName('command'))) {
             return $this->command = [];
         }
 
         if (\count($tags) > 1) {
-            throw new \LogicException(\sprintf('"@command" tag can only be used once in "%s".', $this->class()->name));
+            throw new \LogicException(\sprintf('"@command" tag can only be used once in "%s".', $this->class->name));
         }
 
         if (!\preg_match_all('#[\w:?\-|=\[\]]+("[^"]*")?#', $tags[0], $matches)) {
-            throw new \LogicException(\sprintf('"@command" tag must have a value in "%s".', $this->class()->name));
+            throw new \LogicException(\sprintf('"@command" tag must have a value in "%s".', $this->class->name));
         }
 
         return $this->command = $matches[0];
@@ -236,10 +252,5 @@ final class DocblockConfiguration extends Configuration
     private static function factory(): DocBlockFactory
     {
         return self::$factory ??= DocBlockFactory::createInstance();
-    }
-
-    private function docblock(): DocBlock
-    {
-        return $this->docblock ??= self::factory()->create($this->class()->getDocComment());
     }
 }

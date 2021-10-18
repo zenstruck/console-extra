@@ -6,7 +6,6 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -14,20 +13,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class IO extends SymfonyStyle implements InputInterface
 {
-    public const SUPPORTED_TYPES = [
-        null,
-        StyleInterface::class,
-        InputInterface::class,
-        OutputInterface::class,
-    ];
-
     private InputInterface $input;
+    private OutputInterface $output;
 
     final public function __construct(InputInterface $input, OutputInterface $output)
     {
-        parent::__construct($input, $output);
-
-        $this->input = $input;
+        parent::__construct($this->input = $input, $this->output = $output);
     }
 
     /**
@@ -38,6 +29,16 @@ class IO extends SymfonyStyle implements InputInterface
         yield from $this->createProgressBar()->iterate($iterable, $max);
 
         $this->newLine(2);
+    }
+
+    public function input(): InputInterface
+    {
+        return $this->input;
+    }
+
+    public function output(): OutputInterface
+    {
+        return $this->output;
     }
 
     /**

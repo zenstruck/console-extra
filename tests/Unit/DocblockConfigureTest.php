@@ -1,66 +1,83 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Unit\Configuration;
+namespace Zenstruck\RadCommand\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Command\Command;
-use Zenstruck\RadCommand\Configuration;
-use Zenstruck\RadCommand\Tests\Fixture\Command\AliasedCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\CommandTagCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\CommandTagWithArgsCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\FullCommandTagCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\FullConfigurationCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\HiddenCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedArgumentCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedCommandTagArgumentCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedCommandTagCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedCommandTagOptionCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\MalformedOptionCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\MultipleCommandTagCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\TraditionalConfigurationCommand;
+use Zenstruck\RadCommand\Configuration\DocblockConfiguration;
+use Zenstruck\RadCommand\Tests\Fixture\Command\DocblockCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class DocblockConfigurationTest extends TestCase
+final class DocblockConfigureTest extends TestCase
 {
     /**
      * @test
      */
-    public function description_is_parsed_from_docblock(): void
+    public function parse_name(): void
     {
-        if (\method_exists(Command::class, 'getDefaultDescription')) {
+        /**
+         * @command some:command
+         */
+        $command = new class() extends DocblockCommand {};
+
+        $this->assertSame('some:command', $command::getDefaultName());
+        $this->assertSame('some:command', $command->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function parse_description_and_help(): void
+    {
+        /**
+         * This is the command description.
+         *
+         * This
+         * is
+         * the help.
+         */
+        $command = new class() extends DocblockCommand {};
+
+        if (DocblockConfiguration::supportsLazy()) {
             // Symfony <5.3 does not have this feature
-            $this->assertSame('This is the command description.', FullConfigurationCommand::getDefaultDescription());
+            $this->assertSame('This is the command description.', $command::getDefaultDescription());
         }
 
-        $this->assertSame('This is the command description.', (new FullConfigurationCommand())->getDescription());
+        $this->assertSame('This is the command description.', $command->getDescription());
+        $this->assertSame("This\nis\nthe help.", $command->getHelp());
+
+        $command = new class() extends DocblockCommand {};
+
+        if (DocblockConfiguration::supportsLazy()) {
+            // Symfony <5.3 does not have this feature
+            $this->assertNull($command::getDefaultDescription());
+        }
+
+        $this->assertSame('', $command->getDescription());
+        $this->assertSame('', $command->getHelp());
     }
 
     /**
      * @test
      */
-    public function help_is_parsed_from_docblock(): void
+    public function parse_arguments_and_options(): void
     {
-        $this->assertSame(<<<EOF
-        This is the command's help.
-
-        You
-
-        can use
-
-        multiple lines.
-        EOF, (new FullConfigurationCommand())->getHelp());
-
-        $this->assertSame('', (new CommandTagCommand())->getHelp());
-    }
-
-    /**
-     * @test
-     */
-    public function arguments_and_options_are_parsed_from_docblock(): void
-    {
-        $definition = (new FullConfigurationCommand())->getDefinition();
+        /**
+         * @argument arg1 First argument is required
+         * @argument ?arg2 Second argument is optional
+         * @argument arg3=default Third argument is optional with a default value
+         * @argument arg4="default with space" Forth argument is "optional" with a default value (with spaces)
+         * @argument ?arg5[] Fifth argument is an optional array
+         *
+         * @option option1 First option (no value)
+         * @option option2= Second option (value required)
+         * @option option3=default Third option with default value
+         * @option option4="default with space" Forth option with "default" value (with spaces)
+         * @option o|option5[] Fifth option is an array with a shortcut (-o)
+         */
+        $command = new class() extends DocblockCommand {};
+        $definition = $command->getDefinition();
 
         $arg = $definition->getArgument('arg1');
         $this->assertTrue($arg->isRequired());
@@ -131,28 +148,45 @@ final class DocblockConfigurationTest extends TestCase
     /**
      * @test
      */
-    public function command_can_use_traditional_configuration(): void
+    public function can_override_docblock_configuration_with_traditional_configuration(): void
     {
-        if (\method_exists(Command::class, 'getDefaultDescription')) {
+        /**
+         * Not used description.
+         *
+         * Not used help.
+         *
+         * @command not:used:name
+         *
+         * @argument arg not used
+         * @option option not used
+         */
+        $command = new class() extends DocblockCommand {
+            protected static $defaultName = 'traditional:name';
+            protected static $defaultDescription = 'Traditional description';
+
+            protected function configure(): void
+            {
+                $this
+                    ->setDescription(self::$defaultDescription)
+                    ->setHelp('Traditional help')
+                    ->addArgument('t1')
+                    ->addOption('t2')
+                ;
+            }
+        };
+
+        if (DocblockConfiguration::supportsLazy()) {
             // Symfony <5.3 does not have this feature
-            $this->assertSame('Traditional description', TraditionalConfigurationCommand::getDefaultDescription());
+            $this->assertSame('Traditional description', $command::getDefaultDescription());
         }
 
-        $command = new TraditionalConfigurationCommand();
-
+        $this->assertSame('traditional:name', $command::getDefaultName());
         $this->assertSame('Traditional description', $command->getDescription());
         $this->assertSame('Traditional help', $command->getHelp());
-        $this->assertSame(['t1'], \array_keys($command->getDefinition()->getArguments()));
-        $this->assertSame(['t2'], \array_keys($command->getDefinition()->getOptions()));
-    }
-
-    /**
-     * @test
-     */
-    public function can_use_command_docblock_tag_to_set_name(): void
-    {
-        $this->assertSame('custom:name', CommandTagCommand::getDefaultName());
-        $this->assertSame('custom:name', (new CommandTagCommand())->getName());
+        $this->assertTrue($command->getDefinition()->hasArgument('t1'));
+        $this->assertTrue($command->getDefinition()->hasOption('t2'));
+        $this->assertFalse($command->getDefinition()->hasArgument('arg'));
+        $this->assertFalse($command->getDefinition()->hasOption('option'));
     }
 
     /**
@@ -161,9 +195,13 @@ final class DocblockConfigurationTest extends TestCase
     public function malformed_argument(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(\sprintf('Argument tag "@argument foo==bar" on "%s" is malformed.', MalformedArgumentCommand::class));
+        $this->expectExceptionMessage('Argument tag "@argument foo==bar" on "');
+        $this->expectExceptionMessage('" is malformed.');
 
-        new MalformedArgumentCommand();
+        /**
+         * @argument foo==bar
+         */
+        new class() extends DocblockCommand {};
     }
 
     /**
@@ -172,9 +210,13 @@ final class DocblockConfigurationTest extends TestCase
     public function malformed_option(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(\sprintf('Option tag "@option foo==bar" on "%s" is malformed.', MalformedOptionCommand::class));
+        $this->expectExceptionMessage('Option tag "@option foo==bar" on "');
+        $this->expectExceptionMessage('" is malformed.');
 
-        new MalformedOptionCommand();
+        /**
+         * @option foo==bar
+         */
+        new class() extends DocblockCommand {};
     }
 
     /**
@@ -183,9 +225,13 @@ final class DocblockConfigurationTest extends TestCase
     public function only_one_command_tag_is_allowed(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(\sprintf('"@command" tag can only be used once in "%s".', MultipleCommandTagCommand::class));
+        $this->expectExceptionMessage('"@command" tag can only be used once in "');
 
-        new MultipleCommandTagCommand();
+        /**
+         * @command first
+         * @command second
+         */
+        new class() extends DocblockCommand {};
     }
 
     /**
@@ -193,10 +239,10 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function can_add_arguments_and_options_to_command_tag(): void
     {
-        $command = new CommandTagWithArgsCommand();
-
-        $this->assertSame('some:command', $command->getName());
-
+        /**
+         * @command some:command arg1 ?arg2 arg3=default arg4="default with space" ?arg5[] --option1 --option2= --option3=default --option4="default with space" --o|option5[]
+         */
+        $command = new class() extends DocblockCommand {};
         $definition = $command->getDefinition();
 
         $arg = $definition->getArgument('arg1');
@@ -271,9 +317,12 @@ final class DocblockConfigurationTest extends TestCase
     public function command_tag_no_body(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(\sprintf('"@command" tag must have a value in "%s".', MalformedCommandTagCommand::class));
+        $this->expectExceptionMessage('"@command" tag must have a value in "');
 
-        new MalformedCommandTagCommand();
+        /**
+         * @command
+         */
+        new class() extends DocblockCommand {};
     }
 
     /**
@@ -282,9 +331,12 @@ final class DocblockConfigurationTest extends TestCase
     public function malformed_command_tag_argument(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(\sprintf('"@command" tag has a malformed argument ("foo==bar") in "%s".', MalformedCommandTagArgumentCommand::class));
+        $this->expectExceptionMessage('"@command" tag has a malformed argument ("foo==bar") in "');
 
-        new MalformedCommandTagArgumentCommand();
+        /**
+         * @command my:command foo==bar
+         */
+        new class() extends DocblockCommand {};
     }
 
     /**
@@ -293,9 +345,12 @@ final class DocblockConfigurationTest extends TestCase
     public function malformed_command_tag_option(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(\sprintf('"@command" tag has a malformed option ("--foo==bar") in "%s".', MalformedCommandTagOptionCommand::class));
+        $this->expectExceptionMessage('"@command" tag has a malformed option ("--foo==bar") in "');
 
-        new MalformedCommandTagOptionCommand();
+        /**
+         * @command my:command --foo==bar
+         */
+        new class() extends DocblockCommand {};
     }
 
     /**
@@ -303,12 +358,18 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function can_mark_as_hidden_with_hidden_tag(): void
     {
-        $this->assertFalse((new FullConfigurationCommand())->isHidden());
+        $command = new class() extends DocblockCommand {};
 
-        $command = new HiddenCommand();
+        $this->assertFalse($command->isHidden());
+
+        /**
+         * @command my:command
+         * @hidden
+         */
+        $command = new class() extends DocblockCommand {};
 
         $this->assertTrue($command->isHidden());
-        $this->assertSame('hidden:command', $command->getName());
+        $this->assertSame('my:command', $command->getName());
     }
 
     /**
@@ -316,11 +377,17 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function hidden_command_is_lazy(): void
     {
-        if (Configuration::supportsLazy()) {
+        /**
+         * @command my:command
+         * @hidden
+         */
+        $command = new class() extends DocblockCommand {};
+
+        if (DocblockConfiguration::supportsLazy()) {
             // Symfony 5.3+ supports setting hidden lazily
-            $this->assertSame('|hidden:command', HiddenCommand::getDefaultName());
+            $this->assertSame('|my:command', $command::getDefaultName());
         } else {
-            $this->assertSame('hidden:command', HiddenCommand::getDefaultName());
+            $this->assertSame('my:command', $command::getDefaultName());
         }
     }
 
@@ -329,7 +396,12 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function can_add_aliases_with_alias_tag(): void
     {
-        $command = new AliasedCommand();
+        /**
+         * @command aliased:command
+         * @alias alias1
+         * @alias alias2
+         */
+        $command = new class() extends DocblockCommand {};
 
         $this->assertSame('aliased:command', $command->getName());
         $this->assertSame(['alias1', 'alias2'], $command->getAliases());
@@ -340,11 +412,18 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function aliased_command_is_lazy(): void
     {
-        if (Configuration::supportsLazy()) {
+        /**
+         * @command aliased:command
+         * @alias alias1
+         * @alias alias2
+         */
+        $command = new class() extends DocblockCommand {};
+
+        if (DocblockConfiguration::supportsLazy()) {
             // Symfony 5.3+ supports lazy aliases
-            $this->assertSame('aliased:command|alias1|alias2', AliasedCommand::getDefaultName());
+            $this->assertSame('aliased:command|alias1|alias2', $command::getDefaultName());
         } else {
-            $this->assertSame('aliased:command', AliasedCommand::getDefaultName());
+            $this->assertSame('aliased:command', $command::getDefaultName());
         }
     }
 
@@ -353,9 +432,12 @@ final class DocblockConfigurationTest extends TestCase
      */
     public function fully_condensed_command_tag(): void
     {
-        $command = new FullCommandTagCommand();
+        /**
+         * @command |kitchen:sink|alias1|alias2 arg --option
+         */
+        $command = new class() extends DocblockCommand {};
 
-        if (Configuration::supportsLazy()) {
+        if (DocblockConfiguration::supportsLazy()) {
             // Symfony 5.3+ supports lazy
             $this->assertSame('|kitchen:sink|alias1|alias2', $command::getDefaultName());
         } else {
@@ -380,5 +462,16 @@ final class DocblockConfigurationTest extends TestCase
         $this->assertSame('', $option->getDescription());
         $this->assertNull($option->getShortcut());
         $this->assertFalse($option->isValueRequired());
+    }
+
+    /**
+     * @test
+     */
+    public function auto_name_if_missing_command_tag(): void
+    {
+        $command = new class() extends DocblockCommand {};
+
+        $this->assertStringContainsString('app:', $command::getDefaultName());
+        $this->assertStringContainsString('app:', $command->getName());
     }
 }
