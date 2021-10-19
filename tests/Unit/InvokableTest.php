@@ -8,7 +8,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\Console\Style\OutputStyle;
 use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Zenstruck\Callback\Exception\UnresolveableArgument;
 use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\RadCommand\Invokable;
@@ -129,6 +131,43 @@ final class InvokableTest extends TestCase
             ->assertSuccessful()
             ->assertOutputNotContains('Success!')
             ->assertOutputContains('OVERRIDE')
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function can_inject_io_base_classes(): void
+    {
+        TestCommand::for(
+            new class() extends InvokableCommand {
+                public function __invoke(OutputStyle $output, SymfonyStyle $style)
+                {
+                    $output->text(\sprintf('OutputStyle: %s', get_debug_type($output)));
+                    $output->text(\sprintf('SymfonyStyle: %s', get_debug_type($style)));
+                }
+            })
+            ->execute()
+            ->assertSuccessful()
+            ->assertOutputContains(\sprintf('OutputStyle: %s', IO::class))
+            ->assertOutputContains(\sprintf('SymfonyStyle: %s', IO::class))
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function cannot_inject_unsupported_output(): void
+    {
+        $this->expectException(UnresolveableArgument::class);
+
+        TestCommand::for(
+            new class() extends InvokableCommand {
+                public function __invoke(StreamOutput $output)
+                {
+                }
+            })
+            ->execute()
         ;
     }
 }

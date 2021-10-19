@@ -4,8 +4,8 @@ namespace Zenstruck\RadCommand;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\StyleInterface;
 use Zenstruck\Callback;
+use Zenstruck\Callback\Argument;
 use Zenstruck\Callback\Parameter;
 
 /**
@@ -21,11 +21,11 @@ trait Invokable
 
         $parameters = \array_merge(
             [
-                Parameter::typed(InputInterface::class, $input, Callback\Argument::EXACT),
-                Parameter::typed(OutputInterface::class, $output, Callback\Argument::EXACT),
-                Parameter::typed(StyleInterface::class, $io, Callback\Argument::EXACT),
-                Parameter::typed(IO::class, Parameter::factory(fn(string $class) => new $class($input, $output))),
                 Parameter::untyped($io),
+                Parameter::typed(InputInterface::class, $input, Argument::EXACT),
+                Parameter::typed(OutputInterface::class, $output, Argument::EXACT),
+                Parameter::typed(IO::class, $io, Argument::COVARIANCE),
+                Parameter::typed(IO::class, Parameter::factory(fn($class) => new $class($input, $output))),
             ],
             $this->invokeParameters()
         );
