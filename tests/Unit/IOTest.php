@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\NullOutput;
 use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\RadCommand\IO;
 use Zenstruck\RadCommand\Tests\Fixture\Command\InvokableCommand;
+use Zenstruck\RadCommand\Tests\Fixture\CustomIO;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -104,5 +105,61 @@ final class IOTest extends TestCase
             end of progressbar
             EOF)
         ;
+    }
+
+    /**
+     * @test
+     */
+    public function create_table(): void
+    {
+        TestCommand::for(
+            new class() extends InvokableCommand {
+                public function __invoke(IO $io)
+                {
+                    $io->createTable()
+                        ->setHeaders(['h1'])
+                        ->addRow(['v1'])
+                        ->render()
+                    ;
+                }
+            })
+            ->execute()
+            ->assertOutputContains(" ---- \n  h1  \n ---- \n  v1  \n ----")
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function create_appendable_table(): void
+    {
+        TestCommand::for(
+            new class() extends InvokableCommand {
+                public function __invoke(IO $io)
+                {
+                    $table = $io->createTable()
+                        ->setHeaders(['h1'])
+                        ->addRow(['v1'])
+                    ;
+
+                    $table->render();
+                    $table->appendRow(['v2']);
+                }
+            })
+            ->splitOutputStreams()
+            ->execute()
+            ->assertOutputContains(" ---- \n  h1  \n ---- ")
+            ->assertOutputContains(" ---- \n  v1  \n ---- ")
+            ->assertOutputContains("  v2  \n ---- ")
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function get_error_style_returns_io(): void
+    {
+        $this->assertInstanceOf(IO::class, (new IO(new StringInput(''), new NullOutput()))->getErrorStyle());
+        $this->assertInstanceOf(CustomIO::class, (new CustomIO(new StringInput(''), new NullOutput()))->getErrorStyle());
     }
 }

@@ -3,8 +3,11 @@
 namespace Zenstruck\RadCommand;
 
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -31,6 +34,19 @@ class IO extends SymfonyStyle implements InputInterface
         $this->newLine(2);
     }
 
+    /**
+     * Create a styled table. Uses {@see ConsoleSectionOutput} if available.
+     */
+    public function createTable(): Table
+    {
+        $style = clone Table::getStyleDefinition('symfony-style-guide');
+        $style->setCellHeaderFormat('<info>%s</info>');
+
+        return (new Table($this->output instanceof ConsoleOutputInterface ? $this->output->section() : $this->output))
+            ->setStyle($style)
+        ;
+    }
+
     public function input(): InputInterface
     {
         return $this->input;
@@ -39,6 +55,14 @@ class IO extends SymfonyStyle implements InputInterface
     public function output(): OutputInterface
     {
         return $this->output;
+    }
+
+    /**
+     * Override to ensure an instance of IO is returned.
+     */
+    public function getErrorStyle(): self
+    {
+        return new static($this->input, $this->getErrorOutput());
     }
 
     /**
