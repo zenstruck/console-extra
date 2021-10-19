@@ -137,6 +137,38 @@ final class InvokableTest extends TestCase
     /**
      * @test
      */
+    public function can_set_custom_io_as_argument_factory(): void
+    {
+        $command = (new class() extends InvokableCommand {
+            public function __invoke(IO $io, CustomIO $custom, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
+            {
+                $io->comment(\sprintf('IO: %s', \get_class($io)));
+                $io->comment(\sprintf('CustomIO: %s', \get_class($custom)));
+                $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
+                $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
+                $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
+                $io->comment(\sprintf('none: %s', \get_class($none)));
+                $io->success('Success!');
+            }
+        })->addArgumentFactory(IO::class, fn($input, $output) => new CustomIO($input, $output));
+
+        TestCommand::for($command)
+            ->execute()
+            ->assertSuccessful()
+            ->assertOutputContains(\sprintf('IO: %s', CustomIO::class))
+            ->assertOutputContains(\sprintf('CustomIO: %s', CustomIO::class))
+            ->assertOutputContains(\sprintf('InputInterface: %s', StringInput::class))
+            ->assertOutputContains(\sprintf('OutputInterface: %s', StreamOutput::class))
+            ->assertOutputContains(\sprintf('StyleInterface: %s', CustomIO::class))
+            ->assertOutputContains(\sprintf('none: %s', CustomIO::class))
+            ->assertOutputNotContains('Success!')
+            ->assertOutputContains('OVERRIDE')
+        ;
+    }
+
+    /**
+     * @test
+     */
     public function can_inject_io_base_classes(): void
     {
         TestCommand::for(

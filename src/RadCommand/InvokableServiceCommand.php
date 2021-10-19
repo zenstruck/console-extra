@@ -9,14 +9,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
-use Zenstruck\Callback\Parameter;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 abstract class InvokableServiceCommand extends Command implements ServiceSubscriberInterface
 {
-    use Invokable;
+    use Invokable { execute as private invokableExecute; }
 
     private ContainerInterface $container;
 
@@ -54,10 +53,34 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
                         return $type->allowsNull() ? '?'.$name : $name;
                     },
-                    static::invokeMethod()->getParameters()
+                    static::invokeParameters()
                 )
             )
         );
+    }
+
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
+        foreach (static::getSubscribedServices() as $serviceId) {
+            $optional = 0 === \mb_strpos($serviceId, '?');
+            $serviceId = \ltrim($serviceId, '?');
+
+            try {
+                $value = $this->container()->get(\ltrim($serviceId, '?'));
+            } catch (NotFoundExceptionInterface $e) {
+                if (!$optional) {
+                    // not optional
+                    throw $e;
+                }
+
+                // optional
+                $value = null;
+            }
+
+            $this->addArgumentFactory($serviceId, static fn() => $value);
+        }
+
+        return $this->invokableExecute($input, $output);
     }
 
     /**
@@ -75,30 +98,5 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
         }
 
         return $this->container;
-    }
-
-    private function invokeParameters(): array
-    {
-        return \array_map(
-            function(string $serviceId) {
-                $optional = 0 === \mb_strpos($serviceId, '?');
-                $serviceId = \ltrim($serviceId, '?');
-
-                try {
-                    $value = $this->container()->get(\ltrim($serviceId, '?'));
-                } catch (NotFoundExceptionInterface $e) {
-                    if (!$optional) {
-                        // not optional
-                        throw $e;
-                    }
-
-                    // optional
-                    $value = null;
-                }
-
-                return Parameter::typed($serviceId, $value);
-            },
-            self::getSubscribedServices()
-        );
     }
 }
