@@ -4,10 +4,10 @@ namespace Zenstruck\RadCommand\Tests\Integration;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\HttpKernel\Log\Logger;
 use Zenstruck\Console\Test\InteractsWithConsole;
+use Zenstruck\Console\Test\TestInput;
+use Zenstruck\Console\Test\TestOutput;
 use Zenstruck\RadCommand\IO;
 use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceCommand;
 use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
@@ -27,8 +27,8 @@ final class InvokableServiceCommandTest extends KernelTestCase
         $this->executeConsoleCommand(ServiceCommand::class)
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
-            ->assertOutputContains(\sprintf('InputInterface: %s', StringInput::class))
-            ->assertOutputContains(\sprintf('OutputInterface: %s', StreamOutput::class))
+            ->assertOutputContains(\sprintf('InputInterface: %s', TestInput::class))
+            ->assertOutputContains(\sprintf('OutputInterface: %s', TestOutput::class))
             ->assertOutputContains(\sprintf('StyleInterface: %s', IO::class))
             ->assertOutputContains(\sprintf('none: %s', IO::class))
             ->assertOutputContains(\sprintf('LoggerInterface: %s', Logger::class))

@@ -5,7 +5,6 @@ namespace Zenstruck\RadCommand\Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Style\OutputStyle;
@@ -13,6 +12,8 @@ use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Zenstruck\Callback\Exception\UnresolveableArgument;
 use Zenstruck\Console\Test\TestCommand;
+use Zenstruck\Console\Test\TestInput;
+use Zenstruck\Console\Test\TestOutput;
 use Zenstruck\RadCommand\Invokable;
 use Zenstruck\RadCommand\IO;
 use Zenstruck\RadCommand\Tests\Fixture\Command\InvokableCommand;
@@ -44,8 +45,8 @@ final class InvokableTest extends TestCase
             ->execute()
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
-            ->assertOutputContains(\sprintf('InputInterface: %s', StringInput::class))
-            ->assertOutputContains(\sprintf('OutputInterface: %s', StreamOutput::class))
+            ->assertOutputContains(\sprintf('InputInterface: %s', TestInput::class))
+            ->assertOutputContains(\sprintf('OutputInterface: %s', TestOutput::class))
             ->assertOutputContains(\sprintf('StyleInterface: %s', IO::class))
             ->assertOutputContains(\sprintf('none: %s', IO::class))
         ;
@@ -157,8 +158,8 @@ final class InvokableTest extends TestCase
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', CustomIO::class))
             ->assertOutputContains(\sprintf('CustomIO: %s', CustomIO::class))
-            ->assertOutputContains(\sprintf('InputInterface: %s', StringInput::class))
-            ->assertOutputContains(\sprintf('OutputInterface: %s', StreamOutput::class))
+            ->assertOutputContains(\sprintf('InputInterface: %s', TestInput::class))
+            ->assertOutputContains(\sprintf('OutputInterface: %s', TestOutput::class))
             ->assertOutputContains(\sprintf('StyleInterface: %s', CustomIO::class))
             ->assertOutputContains(\sprintf('none: %s', CustomIO::class))
             ->assertOutputNotContains('Success!')
