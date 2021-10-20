@@ -29,6 +29,13 @@ class IO extends SymfonyStyle implements InputInterface
      */
     public function progressIterate(iterable $iterable, ?int $max = null): iterable
     {
+        if (\method_exists(parent::class, 'progressIterate')) {
+            // SymfonyStyle 5.4+ includes this method
+            yield from parent::progressIterate($iterable, $max);
+
+            return;
+        }
+
         yield from $this->createProgressBar()->iterate($iterable, $max);
 
         $this->newLine(2);
@@ -39,6 +46,11 @@ class IO extends SymfonyStyle implements InputInterface
      */
     public function createTable(): Table
     {
+        if (\method_exists(parent::class, 'createTable')) {
+            // SymfonyStyle 5.4+ includes this method
+            return parent::createTable();
+        }
+
         $style = clone Table::getStyleDefinition('symfony-style-guide');
         $style->setCellHeaderFormat('<info>%s</info>');
 
