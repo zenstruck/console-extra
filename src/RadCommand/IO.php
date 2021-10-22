@@ -12,6 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
+ * SymfonyStyle implementation that is also an implementation of
+ * {@see InputInterface} to help simplify commands.
+ *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 class IO extends SymfonyStyle implements InputInterface

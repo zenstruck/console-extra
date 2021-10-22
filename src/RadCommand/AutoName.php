@@ -5,8 +5,9 @@ namespace Zenstruck\RadCommand;
 use function Symfony\Component\String\u;
 
 /**
- * Uses the class name to auto-generate the command name
- * (ie GenerateUserReportCommand => app:generate-user-report).
+ * Uses the class name to auto-generate the command name (with "app:" prefix).
+ *
+ * @example GenerateUserReportCommand => app:generate-user-report
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */

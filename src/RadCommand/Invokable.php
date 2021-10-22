@@ -9,6 +9,14 @@ use Zenstruck\Callback\Argument;
 use Zenstruck\Callback\Parameter;
 
 /**
+ * Makes your command "invokable" to reduce boilerplate.
+ *
+ * Auto-injects the following objects into __invoke():
+ *
+ * @see IO
+ * @see InputInterface the "real" input
+ * @see OutputInterface the "real" output
+ *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 trait Invokable
