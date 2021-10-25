@@ -3,6 +3,8 @@
 namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Command\Command;
+use Zenstruck\Console\AutoName;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameCommand;
 
 /**
@@ -24,11 +26,26 @@ final class AutoNameTest extends TestCase
      */
     public function can_use_traditional_naming_method(): void
     {
-        $command = new class() extends AutoNameCommand {
+        $command = new class() extends Command {
+            use AutoName;
+
             protected static $defaultName = 'override';
         };
 
         $this->assertSame('override', $command::getDefaultName());
         $this->assertSame('override', $command->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function using_auto_name_with_anonymous_class_is_not_supported(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage(\sprintf('Using "%s" with an anonymous class is not supported.', AutoName::class));
+
+        new class() extends Command {
+            use AutoName;
+        };
     }
 }

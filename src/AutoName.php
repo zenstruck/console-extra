@@ -19,7 +19,13 @@ trait AutoName
             return $name;
         }
 
-        return u((new \ReflectionClass(static::class))->getShortName())
+        $class = new \ReflectionClass(static::class);
+
+        if ($class->isAnonymous()) {
+            throw new \LogicException(\sprintf('Using "%s" with an anonymous class is not supported.', __TRAIT__));
+        }
+
+        return u($class->getShortName())
             ->snake()
             ->replace('_', '-')
             ->beforeLast('-command')

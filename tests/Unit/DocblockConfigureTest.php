@@ -4,6 +4,7 @@ namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Zenstruck\Console\Configuration\DocblockConfiguration;
+use Zenstruck\Console\Tests\Fixture\Command\AutoNameDocblockCommand;
 use Zenstruck\Console\Tests\Fixture\Command\DocblockCommand;
 
 /**
@@ -14,21 +15,7 @@ final class DocblockConfigureTest extends TestCase
     /**
      * @test
      */
-    public function parse_name(): void
-    {
-        /**
-         * @command some:command
-         */
-        $command = new class() extends DocblockCommand {};
-
-        $this->assertSame('some:command', $command::getDefaultName());
-        $this->assertSame('some:command', $command->getName());
-    }
-
-    /**
-     * @test
-     */
-    public function parse_description_and_help(): void
+    public function parse_name_description_and_help(): void
     {
         /**
          * This is the command description.
@@ -36,8 +23,13 @@ final class DocblockConfigureTest extends TestCase
          * This
          * is
          * the help.
+         *
+         * @command some:command
          */
         $command = new class() extends DocblockCommand {};
+
+        $this->assertSame('some:command', $command::getDefaultName());
+        $this->assertSame('some:command', $command->getName());
 
         if (DocblockConfiguration::supportsLazy()) {
             // Symfony <5.3 does not have this feature
@@ -47,6 +39,9 @@ final class DocblockConfigureTest extends TestCase
         $this->assertSame('This is the command description.', $command->getDescription());
         $this->assertSame("This\nis\nthe help.", $command->getHelp());
 
+        /**
+         * @command some:command
+         */
         $command = new class() extends DocblockCommand {};
 
         if (DocblockConfiguration::supportsLazy()) {
@@ -64,6 +59,8 @@ final class DocblockConfigureTest extends TestCase
     public function parse_arguments_and_options(): void
     {
         /**
+         * @command some:command
+         *
          * @argument arg1 First argument is required
          * @argument ?arg2 Second argument is optional
          * @argument arg3=default Third argument is optional with a default value
@@ -199,6 +196,8 @@ final class DocblockConfigureTest extends TestCase
         $this->expectExceptionMessage('" is malformed.');
 
         /**
+         * @command some:command
+         *
          * @argument foo==bar
          */
         new class() extends DocblockCommand {};
@@ -214,6 +213,8 @@ final class DocblockConfigureTest extends TestCase
         $this->expectExceptionMessage('" is malformed.');
 
         /**
+         * @command some:command
+         *
          * @option foo==bar
          */
         new class() extends DocblockCommand {};
@@ -358,6 +359,9 @@ final class DocblockConfigureTest extends TestCase
      */
     public function can_mark_as_hidden_with_hidden_tag(): void
     {
+        /**
+         * @command some:command
+         */
         $command = new class() extends DocblockCommand {};
 
         $this->assertFalse($command->isHidden());
@@ -469,7 +473,7 @@ final class DocblockConfigureTest extends TestCase
      */
     public function auto_name_if_missing_command_tag(): void
     {
-        $command = new class() extends DocblockCommand {};
+        $command = new AutoNameDocblockCommand();
 
         $this->assertStringContainsString('app:', $command::getDefaultName());
         $this->assertStringContainsString('app:', $command->getName());
