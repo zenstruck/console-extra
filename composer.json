@@ -1,7 +1,7 @@
 {
-    "name": "zenstruck/rad-command",
+    "name": "zenstruck/console-extra",
     "description": "Supercharge your Symfony console commands!",
-    "homepage": "https://github.com/zenstruck/rad-command",
+    "homepage": "https://github.com/zenstruck/console-extra",
     "type": "library",
     "license": "MIT",
     "keywords": ["console", "symfony", "command"],
@@ -26,17 +26,17 @@
         "zenstruck/console-test": "^1.2"
     },
     "suggest": {
-        "phpdocumentor/reflection-docblock": "To configure your RadCommand's via class docblock."
+        "phpdocumentor/reflection-docblock": "To configure your Command's via class docblock."
     },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true
     },
     "autoload": {
-        "psr-4": { "Zenstruck\\": "src/" }
+        "psr-4": { "Zenstruck\\Console\\": "src/" }
     },
     "autoload-dev": {
-        "psr-4": { "Zenstruck\\RadCommand\\Tests\\": "tests/" }
+        "psr-4": { "Zenstruck\\Console\\Tests\\": "tests/" }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

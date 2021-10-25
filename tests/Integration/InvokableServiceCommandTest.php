@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Integration;
+namespace Zenstruck\Console\Tests\Integration;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -8,9 +8,9 @@ use Symfony\Component\HttpKernel\Log\Logger;
 use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Console\Test\TestInput;
 use Zenstruck\Console\Test\TestOutput;
-use Zenstruck\RadCommand\IO;
-use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
+use Zenstruck\Console\IO;
+use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
+use Zenstruck\Console\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

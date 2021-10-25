@@ -1,8 +1,8 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Fixture;
+namespace Zenstruck\Console\Tests\Fixture;
 
-use Zenstruck\RadCommand\IO;
+use Zenstruck\Console\IO;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

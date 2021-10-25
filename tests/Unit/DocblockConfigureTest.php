@@ -1,10 +1,10 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Unit;
+namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Zenstruck\RadCommand\Configuration\DocblockConfiguration;
-use Zenstruck\RadCommand\Tests\Fixture\Command\DocblockCommand;
+use Zenstruck\Console\Configuration\DocblockConfiguration;
+use Zenstruck\Console\Tests\Fixture\Command\DocblockCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

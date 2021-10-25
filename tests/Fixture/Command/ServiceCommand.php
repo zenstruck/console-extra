@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Fixture\Command;
+namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\Table;
@@ -8,8 +8,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Zenstruck\RadCommand\InvokableServiceCommand;
-use Zenstruck\RadCommand\IO;
+use Zenstruck\Console\InvokableServiceCommand;
+use Zenstruck\Console\IO;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

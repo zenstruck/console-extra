@@ -1,14 +1,14 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Fixture;
+namespace Zenstruck\Console\Tests\Fixture;
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceCommand;
-use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
+use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
+use Zenstruck\Console\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand;
+namespace Zenstruck\Console;
 
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;

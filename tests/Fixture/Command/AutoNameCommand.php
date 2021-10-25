@@ -1,9 +1,9 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Fixture\Command;
+namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Zenstruck\RadCommand\AutoName;
+use Zenstruck\Console\AutoName;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

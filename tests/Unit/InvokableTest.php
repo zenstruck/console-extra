@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Unit;
+namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\Table;
@@ -14,10 +14,10 @@ use Zenstruck\Callback\Exception\UnresolveableArgument;
 use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\Console\Test\TestInput;
 use Zenstruck\Console\Test\TestOutput;
-use Zenstruck\RadCommand\Invokable;
-use Zenstruck\RadCommand\IO;
-use Zenstruck\RadCommand\Tests\Fixture\Command\InvokableCommand;
-use Zenstruck\RadCommand\Tests\Fixture\CustomIO;
+use Zenstruck\Console\Invokable;
+use Zenstruck\Console\IO;
+use Zenstruck\Console\Tests\Fixture\Command\InvokableCommand;
+use Zenstruck\Console\Tests\Fixture\CustomIO;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

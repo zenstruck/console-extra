@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand\Configuration;
+namespace Zenstruck\Console\Configuration;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;

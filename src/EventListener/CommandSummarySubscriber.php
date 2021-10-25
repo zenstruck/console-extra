@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand\EventListener;
+namespace Zenstruck\Console\EventListener;
 
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;

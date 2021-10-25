@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand;
+namespace Zenstruck\Console;
 
 use function Symfony\Component\String\u;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Zenstruck\RadCommand;
+namespace Zenstruck\Console;
 
-use Zenstruck\RadCommand\Configuration\DocblockConfiguration;
+use Zenstruck\Console\Configuration\DocblockConfiguration;
 
 /**
  * Fully configure your command using docblock annotations.

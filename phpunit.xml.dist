@@ -11,12 +11,12 @@
     <php>
         <ini name="error_reporting" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0&amp;max[direct]=0"/>
-        <env name="KERNEL_CLASS" value="Zenstruck\RadCommand\Tests\Fixture\Kernel" />
+        <env name="KERNEL_CLASS" value="Zenstruck\Console\Tests\Fixture\Kernel" />
         <env name="SHELL_VERBOSITY" value="-1"/>
     </php>
 
     <testsuites>
-        <testsuite name="zenstruck/rad-command Test Suite">
+        <testsuite name="zenstruck/console-extra Test Suite">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Unit;
+namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -10,9 +10,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Zenstruck\Console\Test\TestCommand;
-use Zenstruck\RadCommand\IO;
-use Zenstruck\RadCommand\Tests\Fixture\Command\InvokableCommand;
-use Zenstruck\RadCommand\Tests\Fixture\CustomIO;
+use Zenstruck\Console\IO;
+use Zenstruck\Console\Tests\Fixture\Command\InvokableCommand;
+use Zenstruck\Console\Tests\Fixture\CustomIO;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

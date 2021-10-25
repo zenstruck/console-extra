@@ -1,12 +1,12 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Integration\EventListener;
+namespace Zenstruck\Console\Tests\Integration\EventListener;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Console\Test\InteractsWithConsole;
-use Zenstruck\RadCommand\EventListener\CommandSummarySubscriber;
-use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceCommand;
-use Zenstruck\RadCommand\Tests\Fixture\EventListener\CustomCommandSummarySubscriber;
+use Zenstruck\Console\EventListener\CommandSummarySubscriber;
+use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
+use Zenstruck\Console\Tests\Fixture\EventListener\CustomCommandSummarySubscriber;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

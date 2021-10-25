@@ -1,9 +1,9 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Unit;
+namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Zenstruck\RadCommand\Tests\Fixture\Command\AutoNameCommand;
+use Zenstruck\Console\Tests\Fixture\Command\AutoNameCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

@@ -1,10 +1,10 @@
 <?php
 
-namespace Zenstruck\RadCommand\Tests\Fixture\EventListener;
+namespace Zenstruck\Console\Tests\Fixture\EventListener;
 
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Zenstruck\RadCommand\EventListener\CommandSummarySubscriber;
-use Zenstruck\RadCommand\Tests\Fixture\Command\ServiceCommand;
+use Zenstruck\Console\EventListener\CommandSummarySubscriber;
+use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
