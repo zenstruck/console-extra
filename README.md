@@ -40,7 +40,7 @@ composer require zenstruck/console-extra
 This library is a set of modular features that can be used separately or in combination.
 
 **TIP**: To reduce command boilerplate even further, it is recommended to create an abstract base command for your
-app that enables all the features you desire.
+app that enables all the features you desire. Then have all your app's commands extend this.
 
 ### `IO`
 
@@ -61,7 +61,7 @@ $io->input(); // get the "wrapped" input
 $io->output(); // get the "wrapped" output
 ```
 
-On its own it isn't very special but it can be auto-injected into [`Invokable`](#invokable) commands.
+On its own, it isn't very special, but it can be auto-injected into [`Invokable`](#invokable) commands.
 
 ### `Invokable`
 
@@ -92,7 +92,7 @@ You can auto-inject the "raw" input/output:
 public function __invoke(IO $io, InputInterface $input, OutputInterface $output)
 ```
 
-No return type (or `void`) implies `0` status code. You can return an integer if you want to change this:
+No return type (or `void`) implies a `0` status code. You can return an integer if you want to change this:
 
 ```php
 public function __invoke(IO $io): int
@@ -106,7 +106,7 @@ public function __invoke(IO $io): int
 If using the Symfony Framework, you can take [`Invokable`](#invokable) to the next level by auto-injecting services
 into `__invoke()`. This allows your commands to behave like
 [Invokable Service Controllers](https://symfony.com/doc/current/controller/service.html#invokable-controllers)
-(with "controller.service_arguments"). Instead of a "Request", you inject [`IO`](#io).
+(with `controller.service_arguments`). Instead of a _Request_, you inject [`IO`](#io).
 
 Have your commands extend `InvokableServiceCommand` and ensure they are auto-wired/configured.
 
@@ -141,9 +141,9 @@ class CreateUserCommand extends Command
 
 ### `ConfigureWithDocblocks`
 
-Use this trait to allow your command to be configured by your command class' docblock. All these features can be
-disabled by using the traditional methods of configuring your command. `phpdocumentor/reflection-docblock` is required
-for this feature (`composer install phpdocumentor/reflection-docblock`).
+Use this trait to allow your command to be configured by your command class' docblock.
+`phpdocumentor/reflection-docblock` is required for this feature
+(`composer install phpdocumentor/reflection-docblock`).
 
 **Example:**
 
@@ -165,13 +165,13 @@ use Zenstruck\Console\ConfigureWithDocblocks;
  * @alias alias2
  * @hidden
  *
- * @argument arg1 First argument is required
+ * @argument arg1 First argument is required (this is the argument's "description")
  * @argument ?arg2 Second argument is optional
  * @argument arg3=default Third argument is optional with a default value
  * @argument arg4="default with space" Forth argument is "optional" with a default value (with spaces)
  * @argument ?arg5[] Fifth argument is an optional array
  *
- * @option option1 First option (no value)
+ * @option option1 First option (no value) (this is the option's "description")
  * @option option2= Second option (value required)
  * @option option3=default Third option with default value
  * @option option4="default with space" Forth option with "default" value (with spaces)
@@ -183,7 +183,13 @@ class MyCommand extends Command
 }
 ```
 
-**NOTE**: If the `@command` tag is absent, [AutoName](#autoname) is used.
+**NOTES**:
+1. If the `@command` tag is absent, [AutoName](#autoname) is used.
+2. All the configuration can be disabled by using the traditional methods of configuring your command.
+3. Command's are still [lazy](https://symfony.com/blog/new-in-symfony-3-4-lazy-commands) using this method of
+   configuration but there is overhead in parsing the docblocks so be aware of this.
+
+#### `@command` Tag
 
 You can pack all the above into a single `@command` tag. This can act like _routing_ for your console:
 
