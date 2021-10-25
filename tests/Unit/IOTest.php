@@ -9,8 +9,8 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
-use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\Console\IO;
+use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\Console\Tests\Fixture\Command\InvokableCommand;
 use Zenstruck\Console\Tests\Fixture\CustomIO;
 

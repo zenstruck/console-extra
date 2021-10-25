@@ -11,11 +11,11 @@ use Symfony\Component\Console\Style\OutputStyle;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Zenstruck\Callback\Exception\UnresolveableArgument;
+use Zenstruck\Console\Invokable;
+use Zenstruck\Console\IO;
 use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\Console\Test\TestInput;
 use Zenstruck\Console\Test\TestOutput;
-use Zenstruck\Console\Invokable;
-use Zenstruck\Console\IO;
 use Zenstruck\Console\Tests\Fixture\Command\InvokableCommand;
 use Zenstruck\Console\Tests\Fixture\CustomIO;
 

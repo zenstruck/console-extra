@@ -3,8 +3,8 @@
 namespace Zenstruck\Console\Tests\Integration\EventListener;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Console\EventListener\CommandSummarySubscriber;
+use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
 use Zenstruck\Console\Tests\Fixture\EventListener\CustomCommandSummarySubscriber;
 

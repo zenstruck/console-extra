@@ -5,10 +5,10 @@ namespace Zenstruck\Console\Tests\Integration;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\Log\Logger;
+use Zenstruck\Console\IO;
 use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Console\Test\TestInput;
 use Zenstruck\Console\Test\TestOutput;
-use Zenstruck\Console\IO;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
 
