@@ -13,31 +13,10 @@ jobs:
       phpunit: simple-phpunit
 
   code-coverage:
-    name: Code Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.3.3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@2.7.0
-        with:
-          php-version: 8.0
-          coverage: xdebug
-          ini-values: xdebug.mode=coverage
-
-      - name: Install dependencies
-        uses: ramsey/composer-install@v1
-        with:
-          composer-options: --prefer-dist
-
-      - name: Test with coverage
-        run: vendor/bin/simple-phpunit -v --coverage-text --coverage-clover coverage.xml
-
-#      - name: Publish coverage report to Codecov
-#        uses: codecov/codecov-action@v1
-#        with:
-#          file: ./coverage.xml
+    uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main
+    with:
+      php: 8
+      phpunit: simple-phpunit
 
   composer-validate:
     uses: zenstruck/.github/.github/workflows/php-composer-validate.yml@main
