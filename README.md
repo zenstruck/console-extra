@@ -1,5 +1,8 @@
 # zenstruck/console-extra
 
+[![CI Status](https://github.com/zenstruck/console-extra/workflows/CI/badge.svg)](https://github.com/zenstruck/console-extra/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/zenstruck/console-extra/branch/1.x/graph/badge.svg?token=OEFPA53TDM)](https://codecov.io/gh/zenstruck/console-extra)
+
 A modular set of features to reduce configuration boilerplate for your commands:
 
 ```php
