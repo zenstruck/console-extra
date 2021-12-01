@@ -4,6 +4,7 @@ namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Symfony\Contracts\Service\ServiceSubscriberTrait;
 use Zenstruck\Console\InvokableServiceCommand;
 use Zenstruck\Console\IO;
@@ -24,6 +25,7 @@ final class ServiceSubscriberTraitCommand extends InvokableServiceCommand
         $io->comment(\sprintf('LoggerInterface: %s', get_debug_type($this->logger())));
     }
 
+    #[SubscribedService]
     private function logger(): LoggerInterface
     {
         return $this->container->get(__METHOD__);
