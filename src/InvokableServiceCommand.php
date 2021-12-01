@@ -66,7 +66,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        foreach (static::getSubscribedServices() as $serviceId) {
+        foreach (self::getSubscribedServices() as $serviceId) {
             $optional = 0 === \mb_strpos($serviceId, '?');
             $serviceId = \ltrim($serviceId, '?');
 
