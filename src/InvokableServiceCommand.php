@@ -58,7 +58,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
                         return $type->allowsNull() ? '?'.$name : $name;
                     },
-                    static::invokeParameters()
+                    self::invokeParameters()
                 )
             )
         );

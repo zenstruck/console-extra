@@ -13,24 +13,37 @@ use function Symfony\Component\String\u;
  * @internal
  *
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @template T of Command
  */
 final class DocblockConfiguration
 {
-    /** @var array<class-string, self> */
+    /** @var array<class-string, self<T>> */
     private static array $instances = [];
     private static DocBlockFactory $factory;
     private static bool $supportsLazy;
 
+    /** @var \ReflectionClass<T> */
     private \ReflectionClass $class;
     private DocBlock $docblock;
+
+    /** @var string[] */
     private array $command;
 
+    /**
+     * @param class-string<T> $class
+     */
     private function __construct(string $class)
     {
         $this->class = new \ReflectionClass($class);
         $this->docblock = self::factory()->create($this->class->getDocComment() ?: ' '); // hack to allow empty docblock
     }
 
+    /**
+     * @param class-string<T> $class
+     *
+     * @return static<T>
+     */
     public static function for(string $class): self
     {
         return self::$instances[$class] ??= new self($class);
@@ -61,9 +74,12 @@ final class DocblockConfiguration
 
     public function help(): ?string
     {
-        return $this->docblock->getDescription() ?: null;
+        return (string) $this->docblock->getDescription() ?: null;
     }
 
+    /**
+     * @return \Traversable<array<mixed>>
+     */
     public function arguments(): \Traversable
     {
         $command = $this->command();
@@ -93,6 +109,9 @@ final class DocblockConfiguration
         }
     }
 
+    /**
+     * @return \Traversable<array<mixed>>
+     */
     public function options(): \Traversable
     {
         $command = $this->command();
@@ -134,6 +153,9 @@ final class DocblockConfiguration
         return !self::supportsLazy() && u($this->command()[0] ?? '')->startsWith('|');
     }
 
+    /**
+     * @return \Traversable<string>
+     */
     public function aliases(): \Traversable
     {
         foreach ($this->docblock->getTagsByName('alias') as $alias) {
@@ -155,6 +177,9 @@ final class DocblockConfiguration
         }
     }
 
+    /**
+     * @return string[]
+     */
     private function command(): array
     {
         if (isset($this->command)) {
@@ -176,6 +201,9 @@ final class DocblockConfiguration
         return $this->command = $matches[0];
     }
 
+    /**
+     * @return array<mixed>
+     */
     private static function parseArgument(string $value): array
     {
         if (\preg_match('#^(\?)?([\w\-]+)(=([\w\-]+))?(\s+(.+))?$#', $value, $matches)) {
@@ -211,6 +239,9 @@ final class DocblockConfiguration
         throw new \LogicException(\sprintf('Malformed argument: "%s".', $value));
     }
 
+    /**
+     * @return array<mixed>
+     */
     private static function parseOption(string $value): array
     {
         if (\preg_match('#^(([\w\-]+)\|)?([\w\-]+)(=([\w\-]+)?)?(\s+(.+))?$#', $value, $matches)) {
