@@ -40,7 +40,7 @@ trait Invokable
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        static::invokeParameters();
+        self::invokeParameters();
 
         $io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
 

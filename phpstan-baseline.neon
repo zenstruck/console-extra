@@ -1,0 +1,97 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Zenstruck\\\\Console\\\\Tests\\\\Fixture\\\\Command\\\\DocblockCommand\\:\\:docblock\\(\\) should return Zenstruck\\\\Console\\\\Configuration\\\\DocblockConfiguration\\<static\\(Zenstruck\\\\Console\\\\Tests\\\\Fixture\\\\Command\\\\DocblockCommand\\)\\> but returns Zenstruck\\\\Console\\\\Configuration\\\\DocblockConfiguration\\<Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\>\\.$#"
+			count: 1
+			path: tests/Fixture/Command/DocblockCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method Zenstruck\\\\Callback\\:\\:createFor\\(\\) expects \\(callable\\(\\)\\: mixed\\)\\|ReflectionFunction, \\$this\\(Zenstruck\\\\Console\\\\Tests\\\\Fixture\\\\Command\\\\InvokableCommand\\) given\\.$#"
+			count: 1
+			path: tests/Fixture/Command/InvokableCommand.php
+
+		-
+			message: "#^Method Zenstruck\\\\Console\\\\Tests\\\\Fixture\\\\Command\\\\ServiceCommand\\:\\:__invoke\\(\\) has parameter \\$none with no type specified\\.$#"
+			count: 1
+			path: tests/Fixture/Command/ServiceCommand.php
+
+		-
+			message: "#^Method Zenstruck\\\\Console\\\\Tests\\\\Fixture\\\\CustomIO\\:\\:success\\(\\) has parameter \\$message with no type specified\\.$#"
+			count: 1
+			path: tests/Fixture/CustomIO.php
+
+		-
+			message: "#^Method Zenstruck\\\\Console\\\\Tests\\\\Fixture\\\\Kernel\\:\\:configureRoutes\\(\\) has parameter \\$routes with no type specified\\.$#"
+			count: 1
+			path: tests/Fixture/Kernel.php
+
+		-
+			message: "#^Cannot call method addSubscriber\\(\\) on object\\|null\\.$#"
+			count: 2
+			path: tests/Integration/EventListener/CommandSummarySubscriberTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$description of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:setDescription\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: tests/Unit/DocblockConfigureTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$haystack of method PHPUnit\\\\Framework\\\\Assert\\:\\:assertStringContainsString\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: tests/Unit/DocblockConfigureTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/IOTest\\.php\\:116\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/IOTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/IOTest\\.php\\:137\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/IOTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/IOTest\\.php\\:90\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/IOTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:110\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:125\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:143\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:143\\:\\:__invoke\\(\\) has parameter \\$none with no type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:176\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:198\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:33\\:\\:__invoke\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Unit/InvokableTest\\.php\\:33\\:\\:__invoke\\(\\) has parameter \\$none with no type specified\\.$#"
+			count: 1
+			path: tests/Unit/InvokableTest.php
+

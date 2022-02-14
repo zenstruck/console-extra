@@ -110,6 +110,8 @@ trait ConfigureWithDocblocks
 
     /**
      * @internal
+     *
+     * @return DocblockConfiguration<static>
      */
     private static function docblock(): DocblockConfiguration
     {
