@@ -71,7 +71,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
             $serviceId = \ltrim($serviceId, '?');
 
             try {
-                $value = $this->container()->get(\ltrim($serviceId, '?'));
+                $value = $this->container()->get($serviceId);
             } catch (NotFoundExceptionInterface $e) {
                 if (!$optional) {
                     // not optional
