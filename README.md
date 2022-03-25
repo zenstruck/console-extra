@@ -123,6 +123,9 @@ class CreateUserCommand extends InvokableServiceCommand
 {
     public function __invoke(IO $io, UserRepository $repo, LoggerInterface $logger): void
     {
+        // access container parameters
+        $environment = $this->parameter('kernel.environment');
+
         // ...
     }
 }
