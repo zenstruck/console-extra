@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
 /**
@@ -26,7 +27,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
     public static function getSubscribedServices(): array
     {
-        return \array_values(
+        $services = \array_values(
             \array_filter(
                 \array_map(
                     static function(\ReflectionParameter $parameter): ?string {
@@ -62,6 +63,8 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
                 )
             )
         );
+
+        return [...$services, ParameterBagInterface::class];
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -94,6 +97,14 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
     public function setInvokeContainer(ContainerInterface $container): void
     {
         $this->container = $container;
+    }
+
+    /**
+     * @return mixed
+     */
+    final protected function parameter(string $name)
+    {
+        return $this->container()->get(ParameterBagInterface::class)->get($name);
     }
 
     private function container(): ContainerInterface

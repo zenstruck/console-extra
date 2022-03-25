@@ -34,6 +34,7 @@ final class InvokableServiceCommandTest extends KernelTestCase
             ->assertOutputContains(\sprintf('LoggerInterface: %s', Logger::class))
             ->assertOutputContains(\sprintf('RouterInterface: %s', Router::class))
             ->assertOutputContains('Table: null')
+            ->assertOutputContains('Parameter environment: test')
         ;
     }
 

@@ -28,6 +28,7 @@ final class ServiceCommand extends InvokableServiceCommand
         $io->comment(\sprintf('LoggerInterface: %s', get_debug_type($logger)));
         $io->comment(\sprintf('RouterInterface: %s', get_debug_type($router)));
         $io->comment(\sprintf('Table: %s', get_debug_type($optional)));
+        $io->comment(\sprintf('Parameter environment: %s', $this->parameter('kernel.environment')));
 
         $io->success('done!');
     }
