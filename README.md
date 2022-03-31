@@ -85,6 +85,9 @@ class MyCommand extends \Symfony\Component\Console\Command\Command
         $role = $io->option('role');
 
         $io->success('created.');
+
+        // even if you don't inject IO, it's available as a method:
+        $this->io(); // IO
     }
 }
 ```

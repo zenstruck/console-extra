@@ -34,6 +34,7 @@ final class InvokableTest extends TestCase
                 public function __invoke(IO $io, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
                 {
                     $io->comment(\sprintf('IO: %s', \get_class($io)));
+                    $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
                     $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
                     $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
                     $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
@@ -45,6 +46,7 @@ final class InvokableTest extends TestCase
             ->execute()
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
+            ->assertOutputContains(\sprintf('$this->io(): %s', IO::class))
             ->assertOutputContains(\sprintf('InputInterface: %s', TestInput::class))
             ->assertOutputContains(\sprintf('OutputInterface: %s', TestOutput::class))
             ->assertOutputContains(\sprintf('StyleInterface: %s', IO::class))
@@ -144,6 +146,7 @@ final class InvokableTest extends TestCase
             public function __invoke(IO $io, CustomIO $custom, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
             {
                 $io->comment(\sprintf('IO: %s', \get_class($io)));
+                $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
                 $io->comment(\sprintf('CustomIO: %s', \get_class($custom)));
                 $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
                 $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
@@ -157,6 +160,7 @@ final class InvokableTest extends TestCase
             ->execute()
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', CustomIO::class))
+            ->assertOutputContains(\sprintf('$this->io(): %s', CustomIO::class))
             ->assertOutputContains(\sprintf('CustomIO: %s', CustomIO::class))
             ->assertOutputContains(\sprintf('InputInterface: %s', TestInput::class))
             ->assertOutputContains(\sprintf('OutputInterface: %s', TestOutput::class))
@@ -202,5 +206,22 @@ final class InvokableTest extends TestCase
             })
             ->execute()
         ;
+    }
+
+    /**
+     * @test
+     */
+    public function cannot_call_io_before_invoking_command(): void
+    {
+        $command = new class() extends InvokableCommand {
+            public function something(): void
+            {
+                $this->io();
+            }
+        };
+
+        $this->expectException(\LogicException::class);
+
+        $command->something();
     }
 }

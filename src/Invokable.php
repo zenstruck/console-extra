@@ -28,6 +28,8 @@ trait Invokable
      */
     private array $argumentFactories = [];
 
+    private IO $io;
+
     /**
      * @param callable(InputInterface,OutputInterface):mixed $factory
      */
@@ -42,7 +44,7 @@ trait Invokable
     {
         self::invokeParameters();
 
-        $io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
+        $this->io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
 
         $parameters = \array_merge(
             \array_map(
@@ -55,10 +57,10 @@ trait Invokable
                 \array_keys($this->argumentFactories)
             ),
             [
-                Parameter::untyped($io),
+                Parameter::untyped($this->io),
                 Parameter::typed(InputInterface::class, $input, Argument::EXACT),
                 Parameter::typed(OutputInterface::class, $output, Argument::EXACT),
-                Parameter::typed(IO::class, $io, Argument::COVARIANCE),
+                Parameter::typed(IO::class, $this->io, Argument::COVARIANCE),
                 Parameter::typed(IO::class, Parameter::factory(fn($class) => new $class($input, $output))),
             ]
         );
@@ -74,6 +76,15 @@ trait Invokable
         }
 
         return $return;
+    }
+
+    protected function io(): IO
+    {
+        if (!isset($this->io)) {
+            throw new \LogicException(\sprintf('Cannot call %s() before running command.', __METHOD__));
+        }
+
+        return $this->io;
     }
 
     /**
