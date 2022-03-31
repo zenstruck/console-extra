@@ -13,11 +13,13 @@ A modular set of features to reduce configuration boilerplate for your commands:
  */
 final class CreateUserCommand extends InvokableServiceCommand
 {
-    use ConfigureWithDocblocks;
+    use ConfigureWithDocblocks, RunsCommands;
 
     public function __invoke(IO $io, UserRepository $repo): void
     {
         $repo->createUser($io->argument('email'), $io->argument('password'), $io->option('role'));
+
+        $this->runCommand('another:command');
 
         $io->success('Created user.');
     }
@@ -217,6 +219,97 @@ class MyCommand extends Command
 2. Argument/Option descriptions are not allowed.
 
 **TIP**: It is recommended to only do this for very simple commands as it isn't as explicit as splitting the tags out.
+
+### `CommandRunner`
+
+A `CommandRunner` object is available to simplify running commands anywhere (ie controller):
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Command\Command $command */
+
+CommandRunner::for($command)->run(); // int (the status after running the command)
+
+// pass arguments
+CommandRunner::for($command, 'arg --opt')->run(); // int
+```
+
+If the application is available, you can use it to run commands:
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Application $application */
+
+CommandRunner::from($application, 'my:command')->run();
+
+// pass arguments/options
+CommandRunner::from($application, 'my:command arg --opt')->run(); // int
+```
+
+If your command is interactive, you can pass inputs:
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Application $application */
+
+CommandRunner::from($application, 'my:command')->run([
+    'foo', // input 1
+    '', // input 2 (<enter>)
+    'y', // input 3
+]);
+```
+
+By default, output is suppressed, you can optionally capture the output:
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Application $application */
+
+$output = new \Symfony\Component\Console\Output\BufferedOutput();
+
+CommandRunner::from($application, 'my:command')
+    ->withOutput($output) // any OutputInterface
+    ->run()
+;
+
+$output->fetch(); // string (the output)
+```
+
+#### `RunsCommands`
+
+You can give your [Invokable Commands](#invokable) the ability to run other commands (defined
+in the application) by using the `RunsCommands` trait. These _sub-commands_ will use the same
+_output_ as the parent command.
+
+```php
+use Symfony\Component\Console\Command;
+use Zenstruck\Console\Invokable;
+use Zenstruck\Console\RunsCommands;
+
+class MyCommand extends Command
+{
+    use Invokable, RunsCommands;
+
+    public function __invoke(): void
+    {
+        $this->runCommand('another:command'); // int (sub-command's run status)
+
+        // pass arguments/options
+        $this->runCommand('another:command arg --opt');
+
+        // pass inputs for interactive commands
+        $this->runCommand('another:command', [
+            'foo', // input 1
+            '', // input 2 (<enter>)
+            'y', // input 3
+        ])
+    }
+}
+```
 
 ### `CommandSummarySubscriber`
 
