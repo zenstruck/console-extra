@@ -13,13 +13,14 @@ A modular set of features to reduce configuration boilerplate for your commands:
  */
 final class CreateUserCommand extends InvokableServiceCommand
 {
-    use ConfigureWithDocblocks, RunsCommands;
+    use ConfigureWithDocblocks, RunsCommands, RunsProcesses;
 
     public function __invoke(IO $io, UserRepository $repo): void
     {
         $repo->createUser($io->argument('email'), $io->argument('password'), $io->option('role'));
 
         $this->runCommand('another:command');
+        $this->runProcess('/some/script');
 
         $io->success('Created user.');
     }
@@ -307,6 +308,40 @@ class MyCommand extends Command
             '', // input 2 (<enter>)
             'y', // input 3
         ])
+    }
+}
+```
+
+### `RunsProcesses`
+
+You can give your [Invokable Commands](#invokable) the ability to run other processes (`symfony/process` required)
+by using the `RunsProcesses` trait. Standard output from the process is hidden by default but can be shown by
+passing `-v` to the _parent command_. Error output is always shown. If the process fails, a `\RuntimeException`
+is thrown.
+
+```php
+use Symfony\Component\Console\Command;
+use Symfony\Component\Process\Process;
+use Zenstruck\Console\Invokable;
+use Zenstruck\Console\RunsProcesses;
+
+class MyCommand extends Command
+{
+    use Invokable, RunsProcesses;
+
+    public function __invoke(): void
+    {
+        $this->runProcess('/some/script');
+
+        // construct with array
+        $this->runProcess(['/some/script', 'arg1', 'arg1']);
+
+        // for full control, pass a Process itself
+        $this->runProcess(
+            Process::fromShellCommandline('/some/script')
+                ->setTimeout(900)
+                ->setWorkingDirectory('/')
+        );
     }
 }
 ```
