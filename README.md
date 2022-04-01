@@ -13,11 +13,14 @@ A modular set of features to reduce configuration boilerplate for your commands:
  */
 final class CreateUserCommand extends InvokableServiceCommand
 {
-    use ConfigureWithDocblocks;
+    use ConfigureWithDocblocks, RunsCommands, RunsProcesses;
 
     public function __invoke(IO $io, UserRepository $repo): void
     {
         $repo->createUser($io->argument('email'), $io->argument('password'), $io->option('role'));
+
+        $this->runCommand('another:command');
+        $this->runProcess('/some/script');
 
         $io->success('Created user.');
     }
@@ -85,6 +88,9 @@ class MyCommand extends \Symfony\Component\Console\Command\Command
         $role = $io->option('role');
 
         $io->success('created.');
+
+        // even if you don't inject IO, it's available as a method:
+        $this->io(); // IO
     }
 }
 ```
@@ -145,6 +151,29 @@ class CreateUserCommand extends Command
 }
 ```
 
+### `ConfigureWithAttributes`
+
+Use this trait to use the `Argument` and `Option` attributes to configure your command's
+arguments and options (_PHP 8+ required_):
+
+```php
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Zenstruck\Console\Attribute\Argument;
+use Zenstruck\Console\Attribute\Option;
+use Zenstruck\Console\ConfigureWithAttributes;
+
+#[Argument('arg1', description: 'Argument 1 description', mode: InputArgument::REQUIRED)]
+#[Argument('arg2', description: 'Argument 1 description')]
+#[Option('option1', description: 'Option 1 description')]
+class MyCommand extends Command
+{
+    use ConfigureWithAttributes;
+}
+```
+
+**NOTE:** This trait is incompatible with [`ConfigureWithDocblocks`](#configurewithdocblocks).
+
 ### `ConfigureWithDocblocks`
 
 Use this trait to allow your command to be configured by your command class' docblock.
@@ -194,6 +223,7 @@ class MyCommand extends Command
 2. All the configuration can be disabled by using the traditional methods of configuring your command.
 3. Command's are still [lazy](https://symfony.com/blog/new-in-symfony-3-4-lazy-commands) using this method of
    configuration but there is overhead in parsing the docblocks so be aware of this.
+4. This trait is incompatible with [`ConfigureWithAttributes`](#configurewithattributes).
 
 #### `@command` Tag
 
@@ -214,6 +244,131 @@ class MyCommand extends Command
 2. Argument/Option descriptions are not allowed.
 
 **TIP**: It is recommended to only do this for very simple commands as it isn't as explicit as splitting the tags out.
+
+### `CommandRunner`
+
+A `CommandRunner` object is available to simplify running commands anywhere (ie controller):
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Command\Command $command */
+
+CommandRunner::for($command)->run(); // int (the status after running the command)
+
+// pass arguments
+CommandRunner::for($command, 'arg --opt')->run(); // int
+```
+
+If the application is available, you can use it to run commands:
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Application $application */
+
+CommandRunner::from($application, 'my:command')->run();
+
+// pass arguments/options
+CommandRunner::from($application, 'my:command arg --opt')->run(); // int
+```
+
+If your command is interactive, you can pass inputs:
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Application $application */
+
+CommandRunner::from($application, 'my:command')->run([
+    'foo', // input 1
+    '', // input 2 (<enter>)
+    'y', // input 3
+]);
+```
+
+By default, output is suppressed, you can optionally capture the output:
+
+```php
+use Zenstruck\Console\CommandRunner;
+
+/** @var \Symfony\Component\Console\Application $application */
+
+$output = new \Symfony\Component\Console\Output\BufferedOutput();
+
+CommandRunner::from($application, 'my:command')
+    ->withOutput($output) // any OutputInterface
+    ->run()
+;
+
+$output->fetch(); // string (the output)
+```
+
+#### `RunsCommands`
+
+You can give your [Invokable Commands](#invokable) the ability to run other commands (defined
+in the application) by using the `RunsCommands` trait. These _sub-commands_ will use the same
+_output_ as the parent command.
+
+```php
+use Symfony\Component\Console\Command;
+use Zenstruck\Console\Invokable;
+use Zenstruck\Console\RunsCommands;
+
+class MyCommand extends Command
+{
+    use Invokable, RunsCommands;
+
+    public function __invoke(): void
+    {
+        $this->runCommand('another:command'); // int (sub-command's run status)
+
+        // pass arguments/options
+        $this->runCommand('another:command arg --opt');
+
+        // pass inputs for interactive commands
+        $this->runCommand('another:command', [
+            'foo', // input 1
+            '', // input 2 (<enter>)
+            'y', // input 3
+        ])
+    }
+}
+```
+
+### `RunsProcesses`
+
+You can give your [Invokable Commands](#invokable) the ability to run other processes (`symfony/process` required)
+by using the `RunsProcesses` trait. Standard output from the process is hidden by default but can be shown by
+passing `-v` to the _parent command_. Error output is always shown. If the process fails, a `\RuntimeException`
+is thrown.
+
+```php
+use Symfony\Component\Console\Command;
+use Symfony\Component\Process\Process;
+use Zenstruck\Console\Invokable;
+use Zenstruck\Console\RunsProcesses;
+
+class MyCommand extends Command
+{
+    use Invokable, RunsProcesses;
+
+    public function __invoke(): void
+    {
+        $this->runProcess('/some/script');
+
+        // construct with array
+        $this->runProcess(['/some/script', 'arg1', 'arg1']);
+
+        // for full control, pass a Process itself
+        $this->runProcess(
+            Process::fromShellCommandline('/some/script')
+                ->setTimeout(900)
+                ->setWorkingDirectory('/')
+        );
+    }
+}
+```
 
 ### `CommandSummarySubscriber`
 
