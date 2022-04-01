@@ -23,6 +23,8 @@ jobs:
 
   cs-check:
     uses: zenstruck/.github/.github/workflows/php-cs-fixer.yml@main
+    with:
+      php: 8
 
   sca:
     name: Static Code Analysis

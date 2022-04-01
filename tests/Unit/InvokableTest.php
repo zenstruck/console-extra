@@ -180,8 +180,8 @@ final class InvokableTest extends TestCase
             new class() extends InvokableCommand {
                 public function __invoke(OutputStyle $output, SymfonyStyle $style)
                 {
-                    $output->text(\sprintf('OutputStyle: %s', get_debug_type($output)));
-                    $output->text(\sprintf('SymfonyStyle: %s', get_debug_type($style)));
+                    $output->text(\sprintf('OutputStyle: %s', \get_debug_type($output)));
+                    $output->text(\sprintf('SymfonyStyle: %s', \get_debug_type($style)));
                 }
             })
             ->execute()

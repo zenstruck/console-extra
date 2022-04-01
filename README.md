@@ -151,6 +151,29 @@ class CreateUserCommand extends Command
 }
 ```
 
+### `ConfigureWithAttributes`
+
+Use this trait to use the `Argument` and `Option` attributes to configure your command's
+arguments and options (_PHP 8+ required_):
+
+```php
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Zenstruck\Console\Attribute\Argument;
+use Zenstruck\Console\Attribute\Option;
+use Zenstruck\Console\ConfigureWithAttributes;
+
+#[Argument('arg1', description: 'Argument 1 description', mode: InputArgument::REQUIRED)]
+#[Argument('arg2', description: 'Argument 1 description')]
+#[Option('option1', description: 'Option 1 description')]
+class MyCommand extends Command
+{
+    use ConfigureWithAttributes;
+}
+```
+
+**NOTE:** This trait is incompatible with [`ConfigureWithDocblocks`](#configurewithdocblocks).
+
 ### `ConfigureWithDocblocks`
 
 Use this trait to allow your command to be configured by your command class' docblock.
@@ -200,6 +223,7 @@ class MyCommand extends Command
 2. All the configuration can be disabled by using the traditional methods of configuring your command.
 3. Command's are still [lazy](https://symfony.com/blog/new-in-symfony-3-4-lazy-commands) using this method of
    configuration but there is overhead in parsing the docblocks so be aware of this.
+4. This trait is incompatible with [`ConfigureWithAttributes`](#configurewithattributes).
 
 #### `@command` Tag
 
