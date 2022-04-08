@@ -151,8 +151,9 @@ class CreateUserCommand extends Command
 }
 ```
 
-By default, the command name's prefix is `app:`. You can override with your own
-prefix (or none at all):
+By default, the command name's prefix is `app:`. You can customize with your own
+prefix (or none at all) by overriding the `autoNamePrefix()` method from the
+`AutoName` trait:
 
 ```php
 use Symfony\Component\Console\Command\Command;
