@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Zenstruck\Console\AutoName;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameCommand;
+use Zenstruck\Console\Tests\Fixture\Command\AutoNameNoPrefixCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -19,6 +20,15 @@ final class AutoNameTest extends TestCase
     {
         $this->assertSame('app:auto-name', AutoNameCommand::getDefaultName());
         $this->assertSame('app:auto-name', (new AutoNameCommand())->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function can_remove_prefix(): void
+    {
+        $this->assertSame('auto-name-no-prefix', AutoNameNoPrefixCommand::getDefaultName());
+        $this->assertSame('auto-name-no-prefix', (new AutoNameNoPrefixCommand())->getName());
     }
 
     /**
