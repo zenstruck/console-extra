@@ -29,8 +29,16 @@ trait AutoName
             ->snake()
             ->replace('_', '-')
             ->beforeLast('-command')
-            ->prepend('app:')
+            ->prepend(static::autoNamePrefix())
             ->toString()
         ;
+    }
+
+    /**
+     * Override to set your own prefix (or none).
+     */
+    protected static function autoNamePrefix(): string
+    {
+        return 'app:';
     }
 }
