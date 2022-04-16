@@ -16,13 +16,16 @@ final class ServiceSubscriberTraitCommand extends InvokableServiceCommand
 {
     use ServiceSubscriberTrait;
 
-    protected static $defaultName = 'service-subscriber-trait-command';
-
     public function __invoke(IO $io, RouterInterface $router): void
     {
         $io->comment(\sprintf('IO: %s', \get_debug_type($io)));
         $io->comment(\sprintf('RouterInterface: %s', \get_debug_type($router)));
         $io->comment(\sprintf('LoggerInterface: %s', \get_debug_type($this->logger())));
+    }
+
+    public static function getDefaultName(): string
+    {
+        return 'service-subscriber-trait-command';
     }
 
     #[SubscribedService]
