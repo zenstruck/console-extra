@@ -27,6 +27,16 @@ class IO extends SymfonyStyle implements InputInterface
         parent::__construct($this->input = $input, $this->output = $output);
     }
 
+    public function __toString(): string
+    {
+        if (!\method_exists($this->input, '__toString')) {
+            // InputInterface extends \Stringable in 6.1+
+            return 'Unsupported...';
+        }
+
+        return $this->input->__toString();
+    }
+
     /**
      * Helper for {@see ProgressBar::iterate()}.
      *

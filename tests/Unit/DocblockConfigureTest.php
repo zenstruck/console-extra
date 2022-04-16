@@ -144,6 +144,7 @@ final class DocblockConfigureTest extends TestCase
 
     /**
      * @test
+     * @group legacy
      */
     public function can_override_docblock_configuration_with_traditional_configuration(): void
     {

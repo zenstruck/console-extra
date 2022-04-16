@@ -16,8 +16,6 @@ use Zenstruck\Console\IO;
  */
 final class ServiceCommand extends InvokableServiceCommand
 {
-    protected static $defaultName = 'service-command';
-
     public function __invoke(IO $io, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, LoggerInterface $logger, ?RouterInterface $router = null, ?Table $optional = null): void
     {
         $io->comment(\sprintf('IO: %s', \get_debug_type($io)));
@@ -31,5 +29,10 @@ final class ServiceCommand extends InvokableServiceCommand
         $io->comment(\sprintf('Parameter environment: %s', $this->parameter('kernel.environment')));
 
         $io->success('done!');
+    }
+
+    public static function getDefaultName(): string
+    {
+        return 'service-command';
     }
 }
