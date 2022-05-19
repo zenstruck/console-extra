@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
 /**
@@ -94,6 +95,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
     /**
      * @required
      */
+    #[Required]
     public function setInvokeContainer(ContainerInterface $container): void
     {
         $this->container = $container;
