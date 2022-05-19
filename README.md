@@ -398,8 +398,10 @@ If using Symfony, configure it as a service to enable:
 
 ```yaml
 # config/packages/zenstruck_console_extra.yaml
-Zenstruck\Console\EventListener\CommandSummarySubscriber:
-    autoconfigure: true
+
+services:
+    Zenstruck\Console\EventListener\CommandSummarySubscriber:
+        autoconfigure: true
 ```
 
 **NOTE**: This will display a summary after every registered command runs.
