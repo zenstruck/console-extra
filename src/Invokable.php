@@ -40,11 +40,14 @@ trait Invokable
         return $this;
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        $this->io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         self::invokeParameters();
-
-        $this->io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
 
         $parameters = \array_merge(
             \array_map(
@@ -57,10 +60,10 @@ trait Invokable
                 \array_keys($this->argumentFactories)
             ),
             [
-                Parameter::untyped($this->io),
+                Parameter::untyped($this->io()),
                 Parameter::typed(InputInterface::class, $input, Argument::EXACT),
                 Parameter::typed(OutputInterface::class, $output, Argument::EXACT),
-                Parameter::typed(IO::class, $this->io, Argument::COVARIANCE),
+                Parameter::typed(IO::class, $this->io(), Argument::COVARIANCE),
                 Parameter::typed(IO::class, Parameter::factory(fn($class) => new $class($input, $output))),
             ]
         );
