@@ -36,15 +36,11 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
                             return null;
                         }
 
-                        if (!$type instanceof \ReflectionNamedType) {
+                        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
                             return null;
                         }
 
                         $name = $type->getName();
-
-                        if ($type->isBuiltin()) {
-                            throw new \LogicException(\sprintf('"%s::__invoke()" cannot accept built-in parameter: $%s (%s).', static::class, $parameter->getName(), $name));
-                        }
 
                         if (\is_a($name, InputInterface::class, true)) {
                             return null;

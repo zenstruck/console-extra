@@ -9,7 +9,6 @@ use Zenstruck\Console\IO;
 use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Console\Test\TestInput;
 use Zenstruck\Console\Test\TestOutput;
-use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
 
 /**
@@ -24,7 +23,7 @@ final class InvokableServiceCommandTest extends KernelTestCase
      */
     public function can_auto_inject_services_into_invoke(): void
     {
-        $this->executeConsoleCommand(ServiceCommand::class)
+        $this->executeConsoleCommand('service-command foo bar --opt2')
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
             ->assertOutputContains(\sprintf('InputInterface: %s', TestInput::class))
@@ -35,6 +34,11 @@ final class InvokableServiceCommandTest extends KernelTestCase
             ->assertOutputContains(\sprintf('RouterInterface: %s', Router::class))
             ->assertOutputContains('Table: null')
             ->assertOutputContains('Parameter environment: test')
+            ->assertOutputContains("arg1: 'foo'")
+            ->assertOutputContains("arg2: 'bar'")
+            ->assertOutputContains("env: 'test'")
+            ->assertOutputContains('opt1: false')
+            ->assertOutputContains('opt2: true')
         ;
     }
 

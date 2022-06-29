@@ -47,28 +47,42 @@ trait Invokable
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        self::invokeParameters();
+        $parameters = \array_map(
+            function(\ReflectionParameter $parameter) use ($input, $output) {
+                $type = $parameter->getType();
 
-        $parameters = \array_merge(
-            \array_map(
-                static function(callable $factory, ?string $type) use ($input, $output) {
-                    $factory = Parameter::factory(fn() => $factory($input, $output));
+                if (null !== $type && !$type instanceof \ReflectionNamedType) {
+                    throw new \LogicException("Union/Intersection types not yet supported for \"{$parameter}\".");
+                }
 
-                    return $type ? Parameter::typed($type, $factory, Argument::EXACT) : Parameter::untyped($factory);
-                },
-                $this->argumentFactories,
-                \array_keys($this->argumentFactories)
-            ),
-            [
-                Parameter::untyped($this->io()),
-                Parameter::typed(InputInterface::class, $input, Argument::EXACT),
-                Parameter::typed(OutputInterface::class, $output, Argument::EXACT),
-                Parameter::typed(IO::class, $this->io(), Argument::COVARIANCE),
-                Parameter::typed(IO::class, Parameter::factory(fn($class) => new $class($input, $output))),
-            ]
+                if ($type instanceof \ReflectionNamedType && isset($this->argumentFactories[$type->getName()])) {
+                    return Parameter::typed(
+                        $type->getName(),
+                        Parameter::factory(fn() => $this->argumentFactories[$type->getName()]($input, $output)),
+                        Argument::EXACT
+                    );
+                }
+
+                if ((!$type || $type->isBuiltin()) && $input->hasArgument($parameter->name)) {
+                    return $input->getArgument($parameter->name);
+                }
+
+                if ((!$type || $type->isBuiltin()) && $input->hasOption($parameter->name)) {
+                    return $input->getOption($parameter->name);
+                }
+
+                return Parameter::union(
+                    Parameter::untyped($this->io()),
+                    Parameter::typed(InputInterface::class, $input, Argument::EXACT),
+                    Parameter::typed(OutputInterface::class, $output, Argument::EXACT),
+                    Parameter::typed(IO::class, $this->io(), Argument::COVARIANCE),
+                    Parameter::typed(IO::class, Parameter::factory(fn($class) => new $class($input, $output)))
+                );
+            },
+            self::invokeParameters(),
         );
 
-        $return = Callback::createFor($this)->invokeAll(Parameter::union(...$parameters));
+        $return = Callback::createFor($this)->invoke(...$parameters);
 
         if (null === $return) {
             $return = 0; // assume 0

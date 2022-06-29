@@ -31,19 +31,45 @@ final class InvokableTest extends TestCase
     {
         TestCommand::for(
             new class() extends InvokableCommand {
-                public function __invoke(IO $io, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
-                {
+                public function __invoke(
+                    IO $io,
+                    InputInterface $input,
+                    OutputInterface $output,
+                    StyleInterface $style,
+                    $none,
+                    $arg1,
+                    string $arg2,
+                    $opt1,
+                    bool $opt2,
+                    ?string $optional = null
+                ) {
                     $io->comment(\sprintf('IO: %s', \get_class($io)));
                     $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
                     $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
                     $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
                     $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
                     $io->comment(\sprintf('none: %s', \get_class($none)));
+                    $io->comment(\sprintf('arg1: %s', \var_export($arg1, true)));
+                    $io->comment(\sprintf('arg2: %s', \var_export($arg2, true)));
+                    $io->comment(\sprintf('opt1: %s', \var_export($opt1, true)));
+                    $io->comment(\sprintf('opt2: %s', \var_export($opt2, true)));
 
                     $io->success('done!');
                 }
+
+                protected function configure(): void
+                {
+                    parent::configure();
+
+                    $this
+                        ->addArgument('arg1')
+                        ->addArgument('arg2')
+                        ->addOption('opt1')
+                        ->addOption('opt2')
+                    ;
+                }
             })
-            ->execute()
+            ->execute('foo bar --opt2')
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
             ->assertOutputContains(\sprintf('$this->io(): %s', IO::class))
@@ -51,6 +77,10 @@ final class InvokableTest extends TestCase
             ->assertOutputContains(\sprintf('OutputInterface: %s', TestOutput::class))
             ->assertOutputContains(\sprintf('StyleInterface: %s', IO::class))
             ->assertOutputContains(\sprintf('none: %s', IO::class))
+            ->assertOutputContains("arg1: 'foo'")
+            ->assertOutputContains("arg2: 'bar'")
+            ->assertOutputContains('opt1: false')
+            ->assertOutputContains('opt2: true')
         ;
     }
 
