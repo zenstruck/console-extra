@@ -15,9 +15,9 @@ final class CreateUserCommand extends InvokableServiceCommand
 {
     use ConfigureWithDocblocks, RunsCommands, RunsProcesses;
 
-    public function __invoke(IO $io, UserRepository $repo): void
+    public function __invoke(IO $io, UserRepository $repo, string $email, string $password, array $roles): void
     {
-        $repo->createUser($io->argument('email'), $io->argument('password'), $io->option('role'));
+        $repo->createUser($email, $password, $roles);
 
         $this->runCommand('another:command');
         $this->runProcess('/some/script');
@@ -71,26 +71,42 @@ On its own, it isn't very special, but it can be auto-injected into [`Invokable`
 
 ### `Invokable`
 
-Use this trait to remove the need for extending `Command::execute()` and just inject what your need (ie [`IO`](#io))
-into your command's `__invoke()` method.
+Use this trait to remove the need for extending `Command::execute()` and just inject what your need
+into your command's `__invoke()` method. The following are parameters that can be auto-injected:
+
+- [`Zenstruck\Console\IO`](#io)
+- `Symfony\Component\Console\Style\StyleInterface`
+- `Symfony\Component\Console\Input\InputInterface`
+- `Symfony\Component\Console\Input\OutputInterface`
+- *arguments* (parameter name much match argument name)
+- *options* (parameter name much match option name)
 
 ```php
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Zenstruck\Console\Invokable;
 use Zenstruck\Console\IO;
 
 class MyCommand extends \Symfony\Component\Console\Command\Command
 {
-    use Invokable;
+    use Invokable; // enables this feature
 
-    public function __invoke(IO $io)
+    // $username/$roles are the argument/option defined below
+    public function __invoke(IO $io, string $username, array $roles)
     {
-        $role = $io->option('role');
-
         $io->success('created.');
 
         // even if you don't inject IO, it's available as a method:
         $this->io(); // IO
+    }
+
+    public function configure(): void
+    {
+        $this
+            ->addArgument('username', InputArgument::REQUIRED)
+            ->addOption('roles', mode: InputOption::VALUE_IS_ARRAY)
+        ;
     }
 }
 ```
