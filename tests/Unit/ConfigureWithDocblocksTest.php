@@ -9,6 +9,8 @@ use Zenstruck\Console\Tests\Fixture\Command\DocblockCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @group legacy
  */
 final class ConfigureWithDocblocksTest extends TestCase
 {
