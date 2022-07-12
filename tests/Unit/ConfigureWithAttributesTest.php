@@ -17,7 +17,7 @@ use Zenstruck\Console\Test\TestCommand;
  *
  * @requires PHP 8
  */
-final class AttributesConfigureTest extends TestCase
+final class ConfigureWithAttributesTest extends TestCase
 {
     /**
      * @test

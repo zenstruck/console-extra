@@ -267,6 +267,10 @@ class CreateUserCommand extends Command
 
 ### `ConfigureWithDocblocks`
 
+> **Note**
+> This trait is deprecated when using with PHP 8+ and will be removed in 2.0.
+> Use [`ConfigureWithAttributes`](#configurewithattributes) instead.
+
 Use this trait to allow your command to be configured by your command class' docblock.
 `phpdocumentor/reflection-docblock` is required for this feature
 (`composer install phpdocumentor/reflection-docblock`).
