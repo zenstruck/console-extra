@@ -7,6 +7,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Zenstruck\Callback;
 use Zenstruck\Callback\Argument;
 use Zenstruck\Callback\Parameter;
+use Zenstruck\Console\Attribute\Argument as ConsoleArgument;
+use Zenstruck\Console\Attribute\Option;
 
 /**
  * Makes your command "invokable" to reduce boilerplate.
@@ -63,12 +65,20 @@ trait Invokable
                     );
                 }
 
-                if ((!$type || $type->isBuiltin()) && $input->hasArgument($parameter->name)) {
-                    return $input->getArgument($parameter->name);
-                }
+                if (!$type || $type->isBuiltin()) {
+                    $name = $parameter->name;
 
-                if ((!$type || $type->isBuiltin()) && $input->hasOption($parameter->name)) {
-                    return $input->getOption($parameter->name);
+                    if (\PHP_VERSION_ID >= 80000 && $attr = $parameter->getAttributes(ConsoleArgument::class)[0] ?? $parameter->getAttributes(Option::class)[0] ?? null) {
+                        $name = $attr->newInstance()->name ?? $name;
+                    }
+
+                    if ($input->hasArgument($name)) {
+                        return $input->getArgument($name);
+                    }
+
+                    if ($input->hasOption($name)) {
+                        return $input->getOption($name);
+                    }
                 }
 
                 return Parameter::union(

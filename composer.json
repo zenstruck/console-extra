@@ -1,6 +1,6 @@
 {
     "name": "zenstruck/console-extra",
-    "description": "Supercharge your Symfony console commands!",
+    "description": "A modular set of features to reduce configuration boilerplate for your Symfony commands.",
     "homepage": "https://github.com/zenstruck/console-extra",
     "type": "library",
     "license": "MIT",

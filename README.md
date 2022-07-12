@@ -3,20 +3,28 @@
 [![CI Status](https://github.com/zenstruck/console-extra/workflows/CI/badge.svg)](https://github.com/zenstruck/console-extra/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/zenstruck/console-extra/branch/1.x/graph/badge.svg?token=OEFPA53TDM)](https://codecov.io/gh/zenstruck/console-extra)
 
-A modular set of features to reduce configuration boilerplate for your commands:
+A modular set of features to reduce configuration boilerplate for your Symfony commands:
 
 ```php
-/**
- * Creates a user in the database.
- *
- * @command create:user email password --r|role[]
- */
+#[AsCommand('create:user', 'Creates a user in the database.')]
 final class CreateUserCommand extends InvokableServiceCommand
 {
-    use ConfigureWithDocblocks, RunsCommands, RunsProcesses;
+    use ConfigureWithAttributes, RunsCommands, RunsProcesses;
 
-    public function __invoke(IO $io, UserRepository $repo, string $email, string $password, array $roles): void
-    {
+    public function __invoke(
+        IO $io,
+
+        UserRepository $repo,
+
+        #[Argument]
+        string $email,
+
+        #[Argument]
+        string $password,
+
+        #[Option(name: 'role', shortcut: 'r')]
+        array $roles,
+    ): void {
         $repo->createUser($email, $password, $roles);
 
         $this->runCommand('another:command');
@@ -45,8 +53,9 @@ composer require zenstruck/console-extra
 
 This library is a set of modular features that can be used separately or in combination.
 
-**TIP**: To reduce command boilerplate even further, it is recommended to create an abstract base command for your
-app that enables all the features you desire. Then have all your app's commands extend this.
+> **Note**
+> To reduce command boilerplate even further, it is recommended to create an abstract base command for your
+> app that enables all the features you desire. Then have all your app's commands extend this.
 
 ### `IO`
 
@@ -78,8 +87,8 @@ into your command's `__invoke()` method. The following are parameters that can b
 - `Symfony\Component\Console\Style\StyleInterface`
 - `Symfony\Component\Console\Input\InputInterface`
 - `Symfony\Component\Console\Input\OutputInterface`
-- *arguments* (parameter name much match argument name)
-- *options* (parameter name much match option name)
+- *arguments* (parameter name must match argument name or use the `Zenstruck\Console\Attribute\Argument` attribute)
+- *options* (parameter name must match option name or use the `Zenstruck\Console\Attribute\Option` attribute)
 
 ```php
 use Symfony\Component\Console\Command\Command;
@@ -153,6 +162,76 @@ class CreateUserCommand extends InvokableServiceCommand
 }
 ```
 
+### `ConfigureWithAttributes`
+
+Use this trait to use the `Argument` and `Option` attributes to configure your command's
+arguments and options (_PHP 8+ required_):
+
+```php
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Zenstruck\Console\Attribute\Argument;
+use Zenstruck\Console\Attribute\Option;
+use Zenstruck\Console\ConfigureWithAttributes;
+
+#[Argument('arg1', description: 'Argument 1 description', mode: InputArgument::REQUIRED)]
+#[Argument('arg2', description: 'Argument 1 description')]
+#[Option('option1', description: 'Option 1 description')]
+class MyCommand extends Command
+{
+    use ConfigureWithAttributes;
+}
+```
+
+> **Note**
+> This trait is incompatible with [`ConfigureWithDocblocks`](#configurewithdocblocks).
+
+#### Invokable Attributes
+
+If using `ConfigureWithAttributes` and [`Invokable`](#invokable) together, you can add the
+`Option`/`Argument` attributes to your `__invoke()` parameters to define and inject arguments/options:
+
+```php
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Zenstruck\Console\Attribute\Argument;
+use Zenstruck\Console\Attribute\Option;
+use Zenstruck\Console\ConfigureWithAttributes;
+use Zenstruck\Console\Invokable;
+
+#[AsCommand('my:command')]
+class MyCommand extends Command
+{
+    use ConfigureWithAttributes, Invokable;
+
+    public function __invoke(
+        #[Argument]
+        string $username, // defined as a required argument (username)
+
+        #[Argument]
+        string $password = 'p4ssw0rd', //  defined as an optional argument (password) with a default (p4ssw0rd)
+
+        #[Option(name: 'role', shortcut: 'r')]
+        array $roles = [], // defined as an array option that requires values (--r|role[])
+
+        #[Option(name: 'super-admin')]
+        bool $superAdmin = false, // defined as a "value-less" option (--super-admin)
+
+        #[Option]
+        ?bool $force = null, // defined as a "negatable" option (--force/--no-force)
+
+        #[Option]
+        ?string $name = null, // defined as an option that requires a value (--name=)
+    ): void {
+        // ...
+    }
+}
+```
+
+> **Note**
+> Option/Argument _modes_ and _defaults_ are detected from the parameter's type-hint/default value
+> and cannot be defined on the attribute.
+
 ### `AutoName`
 
 Use this trait to have your command's name auto-generated from the class name:
@@ -185,29 +264,6 @@ class CreateUserCommand extends Command
     }
 }
 ```
-
-### `ConfigureWithAttributes`
-
-Use this trait to use the `Argument` and `Option` attributes to configure your command's
-arguments and options (_PHP 8+ required_):
-
-```php
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Zenstruck\Console\Attribute\Argument;
-use Zenstruck\Console\Attribute\Option;
-use Zenstruck\Console\ConfigureWithAttributes;
-
-#[Argument('arg1', description: 'Argument 1 description', mode: InputArgument::REQUIRED)]
-#[Argument('arg2', description: 'Argument 1 description')]
-#[Option('option1', description: 'Option 1 description')]
-class MyCommand extends Command
-{
-    use ConfigureWithAttributes;
-}
-```
-
-**NOTE:** This trait is incompatible with [`ConfigureWithDocblocks`](#configurewithdocblocks).
 
 ### `ConfigureWithDocblocks`
 
@@ -253,12 +309,12 @@ class MyCommand extends Command
 }
 ```
 
-**NOTES**:
-1. If the `@command` tag is absent, [AutoName](#autoname) is used.
-2. All the configuration can be disabled by using the traditional methods of configuring your command.
-3. Command's are still [lazy](https://symfony.com/blog/new-in-symfony-3-4-lazy-commands) using this method of
-   configuration but there is overhead in parsing the docblocks so be aware of this.
-4. This trait is incompatible with [`ConfigureWithAttributes`](#configurewithattributes).
+> **Note**
+> 1. If the `@command` tag is absent, [AutoName](#autoname) is used.
+> 2. All the configuration can be disabled by using the traditional methods of configuring your command.
+> 3. Command's are still [lazy](https://symfony.com/blog/new-in-symfony-3-4-lazy-commands) using this method of
+>    configuration but there is overhead in parsing the docblocks so be aware of this.
+> 4. This trait is incompatible with [`ConfigureWithAttributes`](#configurewithattributes).
 
 #### `@command` Tag
 
@@ -274,11 +330,10 @@ class MyCommand extends Command
 }
 ```
 
-**NOTES**:
-1. The `|` prefix makes the command hidden.
-2. Argument/Option descriptions are not allowed.
-
-**TIP**: It is recommended to only do this for very simple commands as it isn't as explicit as splitting the tags out.
+> **Note**
+> 1. The `|` prefix makes the command hidden.
+> 2. Argument/Option descriptions are not allowed.
+> 3. It is recommended to only do this for very simple commands as it isn't as explicit as splitting the tags out.
 
 ### `CommandRunner`
 
@@ -420,4 +475,5 @@ services:
         autoconfigure: true
 ```
 
-**NOTE**: This will display a summary after every registered command runs.
+> **Note**
+> This will display a summary after every registered command runs.
