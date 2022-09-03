@@ -96,20 +96,16 @@ class IO extends SymfonyStyle implements InputInterface
 
     /**
      * Alias for {@see getArgument()}.
-     *
-     * @return mixed
      */
-    public function argument(string $name)
+    public function argument(string $name): mixed
     {
         return $this->getArgument($name);
     }
 
     /**
      * Alias for {@see getOption()}.
-     *
-     * @return mixed
      */
-    public function option(string $name)
+    public function option(string $name): mixed
     {
         return $this->getOption($name);
     }
@@ -121,21 +117,16 @@ class IO extends SymfonyStyle implements InputInterface
 
     /**
      * @param string|string[] $values
-     * @param bool            $onlyParams
      */
-    public function hasParameterOption($values, $onlyParams = false): bool
+    public function hasParameterOption($values, bool $onlyParams = false): bool
     {
         return $this->input->hasParameterOption($values, $onlyParams);
     }
 
     /**
      * @param string|string[] $values
-     * @param mixed           $default
-     * @param bool            $onlyParams
-     *
-     * @return mixed
      */
-    public function getParameterOption($values, $default = false, $onlyParams = false)
+    public function getParameterOption(string|array $values, mixed $default = false, bool $onlyParams = false): mixed
     {
         return $this->input->getParameterOption($values, $default, $onlyParams);
     }
@@ -158,29 +149,17 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getArguments();
     }
 
-    /**
-     * @param string $name
-     *
-     * @return mixed
-     */
-    public function getArgument($name)
+    public function getArgument(string $name): mixed
     {
         return $this->input->getArgument($name);
     }
 
-    /**
-     * @param string $name
-     * @param mixed  $value
-     */
-    public function setArgument($name, $value): void
+    public function setArgument(string $name, mixed $value): void
     {
         $this->input->setArgument($name, $value);
     }
 
-    /**
-     * @param string $name
-     */
-    public function hasArgument($name): bool
+    public function hasArgument(string $name): bool
     {
         return $this->input->hasArgument($name);
     }
@@ -193,29 +172,17 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->getOptions();
     }
 
-    /**
-     * @param string $name
-     *
-     * @return mixed
-     */
-    public function getOption($name)
+    public function getOption(string $name): mixed
     {
         return $this->input->getOption($name);
     }
 
-    /**
-     * @param string $name
-     * @param mixed  $value
-     */
-    public function setOption($name, $value): void
+    public function setOption(string $name, mixed $value): void
     {
         $this->input->setOption($name, $value);
     }
 
-    /**
-     * @param string $name
-     */
-    public function hasOption($name): bool
+    public function hasOption(string $name): bool
     {
         return $this->input->hasOption($name);
     }
@@ -225,10 +192,7 @@ class IO extends SymfonyStyle implements InputInterface
         return $this->input->isInteractive();
     }
 
-    /**
-     * @param bool $interactive
-     */
-    public function setInteractive($interactive): void
+    public function setInteractive(bool $interactive): void
     {
         $this->input->setInteractive($interactive);
     }

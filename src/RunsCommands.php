@@ -14,7 +14,7 @@ trait RunsCommands
      *                                                     MyCommand::class
      *                                                     ['command' => 'my:command', 'arg' => 'value']
      */
-    protected function runCommand($cli, array $inputs = []): int
+    protected function runCommand(array|string $cli, array $inputs = []): int
     {
         if (!$this instanceof Command || !\method_exists($this, 'io')) {
             throw new \LogicException(\sprintf('"%s" can only be used with "%s" commands.', __TRAIT__, Invokable::class));

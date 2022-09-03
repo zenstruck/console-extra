@@ -4,6 +4,7 @@ namespace Zenstruck\Console;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\StringInput;
@@ -73,6 +74,7 @@ final class CommandRunner
 
     /**
      * @param string[] $inputs Interactive inputs to use for the command
+     * @throws ExceptionInterface
      */
     public function run(array $inputs = []): int
     {

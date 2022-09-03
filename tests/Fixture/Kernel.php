@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
 
@@ -22,18 +23,19 @@ final class Kernel extends BaseKernel
         yield new FrameworkBundle();
     }
 
-    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader): void
+    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
-        $c->register(ServiceCommand::class)->setAutowired(true)->setAutoconfigured(true);
-        $c->register(ServiceSubscriberTraitCommand::class)->setAutowired(true)->setAutoconfigured(true);
+        $container->register(ServiceCommand::class)->setAutowired(true)->setAutoconfigured(true);
+        $container->register(ServiceSubscriberTraitCommand::class)->setAutowired(true)->setAutoconfigured(true);
 
-        $c->loadFromExtension('framework', [
+        $container->loadFromExtension('framework', [
             'secret' => 'S3CRET',
+            'http_method_override' => false,
             'test' => true,
         ]);
     }
 
-    protected function configureRoutes($routes): void
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
         // TODO: Implement configureRoutes() method.
     }

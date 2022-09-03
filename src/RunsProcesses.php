@@ -3,6 +3,7 @@
 namespace Zenstruck\Console;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
 
@@ -12,9 +13,9 @@ use Symfony\Component\Process\Process;
 trait RunsProcesses
 {
     /**
-     * @param string[]|string|Process $process
+     * @param string|Process|string[] $process
      */
-    protected function runProcess($process): Process
+    protected function runProcess(array|Process|string $process): Process
     {
         if (!\class_exists(Process::class)) {
             throw new \LogicException('symfony/process required: composer require symfony/process');
@@ -29,7 +30,7 @@ trait RunsProcesses
         }
 
         $commandLine = $process->getCommandLine();
-        $maxLength = \min((new Terminal())->getWidth(), IO::MAX_LINE_LENGTH) - 48;  // account for prefix/decoration length
+        $maxLength = \min((new Terminal())->getWidth(), SymfonyStyle::MAX_LINE_LENGTH) - 48;  // account for prefix/decoration length
         $last = null;
 
         if (\mb_strlen($commandLine) > $maxLength) {

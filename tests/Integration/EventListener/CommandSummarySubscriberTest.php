@@ -3,6 +3,7 @@
 namespace Zenstruck\Console\Tests\Integration\EventListener;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Zenstruck\Console\EventListener\CommandSummarySubscriber;
 use Zenstruck\Console\Test\InteractsWithConsole;
 use Zenstruck\Console\Tests\Fixture\EventListener\CustomCommandSummarySubscriber;
@@ -21,7 +22,9 @@ final class CommandSummarySubscriberTest extends KernelTestCase
     {
         self::bootKernel();
 
-        self::$kernel->getContainer()->get('event_dispatcher')->addSubscriber(new CommandSummarySubscriber());
+        /** @var EventDispatcherInterface $eventDispatcher */
+        $eventDispatcher = self::$kernel->getContainer()->get('event_dispatcher');
+        $eventDispatcher->addSubscriber(new CommandSummarySubscriber());
 
         $this->executeConsoleCommand('service-command foo bar')
             ->assertSuccessful()
@@ -38,7 +41,9 @@ final class CommandSummarySubscriberTest extends KernelTestCase
     {
         self::bootKernel();
 
-        self::$kernel->getContainer()->get('event_dispatcher')->addSubscriber(new CustomCommandSummarySubscriber());
+        /** @var EventDispatcherInterface $eventDispatcher */
+        $eventDispatcher = self::$kernel->getContainer()->get('event_dispatcher');
+        $eventDispatcher->addSubscriber(new CustomCommandSummarySubscriber());
 
         $this->executeConsoleCommand('service-command foo bar')
             ->assertSuccessful()

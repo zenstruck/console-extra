@@ -2,6 +2,7 @@
 
 namespace Zenstruck\Console;
 
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Console\Command\Command;
@@ -98,9 +99,10 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
     }
 
     /**
-     * @return mixed
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    final protected function parameter(string $name)
+    final protected function parameter(string $name): mixed
     {
         return $this->container()->get(ParameterBagInterface::class)->get($name);
     }
