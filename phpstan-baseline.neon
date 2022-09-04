@@ -6,11 +6,6 @@ parameters:
 			path: src/Attribute/Argument.php
 
 		-
-			message: "#^Property Zenstruck\\\\Console\\\\Attribute\\\\Argument\\:\\:\\$default type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Attribute/Argument.php
-
-		-
 			message: "#^Method Zenstruck\\\\Console\\\\Attribute\\\\Option\\:\\:__construct\\(\\) has parameter \\$default with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Attribute/Option.php
@@ -21,12 +16,7 @@ parameters:
 			path: src/Attribute/Option.php
 
 		-
-			message: "#^Property Zenstruck\\\\Console\\\\Attribute\\\\Option\\:\\:\\$default type has no value type specified in iterable type array\\.$#"
+			message: "#^Method Zenstruck\\\\Console\\\\IO\\:\\:getParameterOption\\(\\) has parameter \\$default with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: src/Attribute/Option.php
-
-		-
-			message: "#^Property Zenstruck\\\\Console\\\\Attribute\\\\Option\\:\\:\\$shortcut type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Attribute/Option.php
+			path: src/IO.php
 
