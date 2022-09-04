@@ -146,6 +146,7 @@ final class ConfigureWithDocblocksTest extends TestCase
 
     /**
      * @test
+     *
      * @group legacy
      */
     public function can_override_docblock_configuration_with_traditional_configuration(): void
@@ -158,6 +159,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @command not:used:name
          *
          * @argument arg not used
+         *
          * @option option not used
          */
         $command = new class() extends DocblockCommand {
@@ -371,6 +373,7 @@ final class ConfigureWithDocblocksTest extends TestCase
 
         /**
          * @command my:command
+         *
          * @hidden
          */
         $command = new class() extends DocblockCommand {};
@@ -386,6 +389,7 @@ final class ConfigureWithDocblocksTest extends TestCase
     {
         /**
          * @command my:command
+         *
          * @hidden
          */
         $command = new class() extends DocblockCommand {};
@@ -405,6 +409,7 @@ final class ConfigureWithDocblocksTest extends TestCase
     {
         /**
          * @command aliased:command
+         *
          * @alias alias1
          * @alias alias2
          */
@@ -421,6 +426,7 @@ final class ConfigureWithDocblocksTest extends TestCase
     {
         /**
          * @command aliased:command
+         *
          * @alias alias1
          * @alias alias2
          */

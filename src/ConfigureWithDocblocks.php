@@ -21,8 +21,10 @@ use Zenstruck\Console\Configuration\DocblockConfiguration;
  * Examples:
  *
  * @command app:my:command
+ *
  * @alias alias1
  * @alias alias2
+ *
  * @hidden
  *
  * @argument arg1 First argument is required

@@ -35,6 +35,7 @@ final class DocblockConfiguration
 
     /**
      * @param class-string<T> $class
+     *
      * @throws \ReflectionException
      */
     private function __construct(string $class)

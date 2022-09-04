@@ -74,6 +74,7 @@ final class CommandRunner
 
     /**
      * @param string[] $inputs Interactive inputs to use for the command
+     *
      * @throws ExceptionInterface
      */
     public function run(array $inputs = []): int

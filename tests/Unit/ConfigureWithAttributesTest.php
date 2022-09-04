@@ -19,6 +19,7 @@ final class ConfigureWithAttributesTest extends TestCase
 {
     /**
      * @test
+     *
      * @dataProvider attributeCommandProvider
      */
     public function parse_arguments_and_options(string $class): void

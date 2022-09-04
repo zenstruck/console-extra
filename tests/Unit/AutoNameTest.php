@@ -33,6 +33,7 @@ final class AutoNameTest extends TestCase
 
     /**
      * @test
+     *
      * @group legacy
      */
     public function can_use_traditional_naming_method(): void
