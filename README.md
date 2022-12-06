@@ -162,6 +162,40 @@ class CreateUserCommand extends InvokableServiceCommand
 }
 ```
 
+#### Inject with DI Attributes
+
+> **Note**: This feature requires Symfony 6.2+.
+
+In Symfony 6.2+ you can use any
+[DI attribute](https://symfony.com/doc/current/reference/attributes.html#dependency-injection) on
+your `__invoke()` parameters:
+
+```php
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
+use Zenstruck\Console\InvokableServiceCommand;
+
+class SomeCommand extends InvokableServiceCommand
+{
+    public function __invoke(
+        #[Autowire('@some.service.id')]
+        SomeService $service,
+
+        #[Autowire('%kernel.environment%')]
+        string $env,
+
+        #[Target('githubApi')]
+        HttpClientInterface $httpClient,
+
+        #[TaggedIterator('app.handler')]
+        iterable $handlers,
+    ): void {
+        // ...
+    }
+}
+```
+
 ### `ConfigureWithAttributes`
 
 Use this trait to use the `Argument` and `Option` attributes to configure your command's
