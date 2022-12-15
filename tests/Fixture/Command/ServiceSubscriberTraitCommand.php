@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the zenstruck/console-extra package.
+ *
+ * (c) Kevin Bond <kevinbond@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Psr\Log\LoggerInterface;
@@ -18,9 +27,9 @@ final class ServiceSubscriberTraitCommand extends InvokableServiceCommand
 
     public function __invoke(IO $io, RouterInterface $router): void
     {
-        $io->comment(\sprintf('IO: %s', \get_debug_type($io)));
-        $io->comment(\sprintf('RouterInterface: %s', \get_debug_type($router)));
-        $io->comment(\sprintf('LoggerInterface: %s', \get_debug_type($this->logger())));
+        $io->comment(\sprintf('IO: %s', get_debug_type($io)));
+        $io->comment(\sprintf('RouterInterface: %s', get_debug_type($router)));
+        $io->comment(\sprintf('LoggerInterface: %s', get_debug_type($this->logger())));
     }
 
     public static function getDefaultName(): string
