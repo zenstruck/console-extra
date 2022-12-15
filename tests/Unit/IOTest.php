@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the zenstruck/console-extra package.
+ *
+ * (c) Kevin Bond <kevinbond@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
@@ -96,14 +105,15 @@ final class IOTest extends TestCase
 
                     $io->writeln('end of progressbar');
                 }
-            })
+            }
+        )
             ->execute()
             ->assertOutputContains(<<<EOF
-              0/10 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%
-             10/10 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
+                  0/10 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%
+                 10/10 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
 
-            end of progressbar
-            EOF)
+                end of progressbar
+                EOF)
         ;
     }
 
@@ -122,7 +132,8 @@ final class IOTest extends TestCase
                         ->render()
                     ;
                 }
-            })
+            }
+        )
             ->execute()
             ->assertOutputContains(" ---- \n  h1  \n ---- \n  v1  \n ----")
         ;
@@ -145,7 +156,8 @@ final class IOTest extends TestCase
                     $table->render();
                     $table->appendRow(['v2']);
                 }
-            })
+            }
+        )
             ->splitOutputStreams()
             ->execute()
             ->assertOutputContains(" ---- \n  h1  \n ---- ")

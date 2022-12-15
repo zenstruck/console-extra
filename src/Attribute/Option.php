@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the zenstruck/console-extra package.
+ *
+ * (c) Kevin Bond <kevinbond@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Zenstruck\Console\Attribute;
 
 use Symfony\Component\Console\Input\InputOption;
@@ -39,7 +48,7 @@ final class Option
 
         /** @var self $value */
         $value = $attributes[0]->newInstance();
-        $value->name = $value->name ?? $parameter->name;
+        $value->name ??= $parameter->name;
 
         if ($value->mode) {
             throw new \LogicException(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', self::class));
