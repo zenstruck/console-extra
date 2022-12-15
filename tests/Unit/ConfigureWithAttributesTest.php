@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the zenstruck/console-extra package.
- *
- * (c) Kevin Bond <kevinbond@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
@@ -360,18 +351,25 @@ class WithParameterAttributesCommand extends Command
     public function __invoke(
         #[Argument(description: 'First argument is required')]
         string $arg1,
+
         #[Argument(description: 'Second argument is optional')]
         ?string $arg2 = null,
+
         #[Argument(description: 'Third argument is optional with a default value')]
         string $arg3 = 'default',
+
         #[Argument('arg4', description: 'Fourth argument is an optional array')]
         array $foo = [],
+
         #[Option(description: 'First option (no value)')]
         bool $option1 = false,
+
         #[Option(description: 'Second option (value required)')]
         ?string $option2 = null,
+
         #[Option(description: 'Third option with default value')]
         string $option3 = 'default',
+
         #[Option('option4', shortcut: 'o', description: 'Fourth option is an array with a shortcut (-o)')]
         array $bar = []
     ) {
