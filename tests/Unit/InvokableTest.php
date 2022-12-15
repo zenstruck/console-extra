@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the zenstruck/console-extra package.
- *
- * (c) Kevin Bond <kevinbond@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
@@ -52,12 +43,12 @@ final class InvokableTest extends TestCase
                     bool $opt2,
                     ?string $optional = null
                 ) {
-                    $io->comment(\sprintf('IO: %s', $io::class));
+                    $io->comment(\sprintf('IO: %s', \get_class($io)));
                     $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
-                    $io->comment(\sprintf('InputInterface: %s', $input::class));
-                    $io->comment(\sprintf('OutputInterface: %s', $output::class));
-                    $io->comment(\sprintf('StyleInterface: %s', $style::class));
-                    $io->comment(\sprintf('none: %s', $none::class));
+                    $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
+                    $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
+                    $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
+                    $io->comment(\sprintf('none: %s', \get_class($none)));
                     $io->comment(\sprintf('arg1: %s', \var_export($arg1, true)));
                     $io->comment(\sprintf('arg2: %s', \var_export($arg2, true)));
                     $io->comment(\sprintf('opt1: %s', \var_export($opt1, true)));
@@ -77,8 +68,7 @@ final class InvokableTest extends TestCase
                         ->addOption('opt2')
                     ;
                 }
-            }
-        )
+            })
             ->execute('foo bar --opt2')
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
@@ -105,8 +95,7 @@ final class InvokableTest extends TestCase
                 {
                     return 1;
                 }
-            }
-        )
+            })
             ->execute()
             ->assertStatusCode(1)
         ;
@@ -126,8 +115,7 @@ final class InvokableTest extends TestCase
                 {
                     return 'invalid';
                 }
-            }
-        )
+            })
             ->execute()
         ;
     }
@@ -155,8 +143,7 @@ final class InvokableTest extends TestCase
                 public function __invoke(Table $table)
                 {
                 }
-            }
-        )
+            })
             ->execute()
         ;
     }
@@ -172,8 +159,7 @@ final class InvokableTest extends TestCase
                 {
                     $io->success('Success!');
                 }
-            }
-        )
+            })
             ->execute()
             ->assertSuccessful()
             ->assertOutputNotContains('Success!')
@@ -189,13 +175,13 @@ final class InvokableTest extends TestCase
         $command = (new class() extends InvokableCommand {
             public function __invoke(IO $io, CustomIO $custom, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
             {
-                $io->comment(\sprintf('IO: %s', $io::class));
+                $io->comment(\sprintf('IO: %s', \get_class($io)));
                 $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
-                $io->comment(\sprintf('CustomIO: %s', $custom::class));
-                $io->comment(\sprintf('InputInterface: %s', $input::class));
-                $io->comment(\sprintf('OutputInterface: %s', $output::class));
-                $io->comment(\sprintf('StyleInterface: %s', $style::class));
-                $io->comment(\sprintf('none: %s', $none::class));
+                $io->comment(\sprintf('CustomIO: %s', \get_class($custom)));
+                $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
+                $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
+                $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
+                $io->comment(\sprintf('none: %s', \get_class($none)));
                 $io->success('Success!');
             }
         })->addArgumentFactory(IO::class, fn($input, $output) => new CustomIO($input, $output));
@@ -227,8 +213,7 @@ final class InvokableTest extends TestCase
                     $output->text(\sprintf('OutputStyle: %s', \get_debug_type($output)));
                     $output->text(\sprintf('SymfonyStyle: %s', \get_debug_type($style)));
                 }
-            }
-        )
+            })
             ->execute()
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('OutputStyle: %s', IO::class))
@@ -248,8 +233,7 @@ final class InvokableTest extends TestCase
                 public function __invoke(StreamOutput $output)
                 {
                 }
-            }
-        )
+            })
             ->execute()
         ;
     }

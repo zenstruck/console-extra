@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: zenstruck/.github@php-cs-fixer
         with:
-          php: 8
+          php: 7.4
           key: ${{ secrets.GPG_PRIVATE_KEY }}
 
   sync-with-template:

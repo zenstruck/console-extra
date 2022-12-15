@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the zenstruck/console-extra package.
- *
- * (c) Kevin Bond <kevinbond@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Zenstruck\Console;
 
 use Symfony\Component\Console\Command\Command;
@@ -42,8 +33,7 @@ trait RunsProcesses
         $last = null;
 
         if (\mb_strlen($commandLine) > $maxLength) {
-            $commandLine = \sprintf(
-                '%s...%s',
+            $commandLine = \sprintf('%s...%s',
                 \mb_substr($commandLine, 0, (int) \ceil($maxLength / 2)),
                 \mb_substr($commandLine, 0 - (int) \floor($maxLength / 2) - 3) // accommodate "..."
             );
@@ -56,8 +46,7 @@ trait RunsProcesses
         foreach ($process as $type => $buffer) {
             foreach (\array_filter(\explode("\n", $buffer)) as $line) {
                 if (Process::ERR === $type || $this->io()->isVerbose()) {
-                    $last = \sprintf(
-                        '<%s>%s</%1$s> %s',
+                    $last = \sprintf('<%s>%s</%1$s> %s',
                         Process::ERR === $type ? 'error' : 'comment',
                         \mb_strtoupper($type),
                         $line
