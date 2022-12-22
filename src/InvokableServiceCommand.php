@@ -136,7 +136,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
         return [
             \ltrim($service, '?'),
-            \str_starts_with($service, '?'),
+            str_starts_with($service, '?'),
         ];
     }
 }
