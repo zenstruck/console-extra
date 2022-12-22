@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Service\Attribute\Required;
+use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
 /**
@@ -76,8 +77,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         foreach (self::getSubscribedServices() as $serviceId) {
-            $optional = 0 === \mb_strpos($serviceId, '?');
-            $serviceId = \ltrim($serviceId, '?');
+            [$serviceId, $optional] = self::parseServiceId($serviceId);
 
             try {
                 $value = $this->container()->get($serviceId);
@@ -121,5 +121,22 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
         }
 
         return $this->container;
+    }
+
+    /**
+     * @param string|SubscribedService $service
+     *
+     * @return array{0:string,1:bool}
+     */
+    private static function parseServiceId($service): array
+    {
+        if ($service instanceof SubscribedService) {
+            return [(string) $service->type, $service->nullable];
+        }
+
+        return [
+            \ltrim($service, '?'),
+            \str_starts_with($service, '?'),
+        ];
     }
 }
