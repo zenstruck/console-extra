@@ -77,7 +77,7 @@ trait Invokable
                 if (!$type || $type->isBuiltin()) {
                     $name = $parameter->name;
 
-                    if (\PHP_VERSION_ID >= 80000 && $attr = $parameter->getAttributes(ConsoleArgument::class)[0] ?? $parameter->getAttributes(Option::class)[0] ?? null) {
+                    if ($attr = $parameter->getAttributes(ConsoleArgument::class)[0] ?? $parameter->getAttributes(Option::class)[0] ?? null) {
                         $name = $attr->newInstance()->name ?? $name;
                     }
 

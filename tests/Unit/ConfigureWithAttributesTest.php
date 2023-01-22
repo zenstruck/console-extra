@@ -23,8 +23,6 @@ use Zenstruck\Console\Test\TestCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @requires PHP 8
  */
 final class ConfigureWithAttributesTest extends TestCase
 {

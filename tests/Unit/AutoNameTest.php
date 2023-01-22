@@ -19,6 +19,8 @@ use Zenstruck\Console\Tests\Fixture\Command\AutoNameNoPrefixCommand;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @group legacy
  */
 final class AutoNameTest extends TestCase
 {
@@ -42,7 +44,6 @@ final class AutoNameTest extends TestCase
 
     /**
      * @test
-     * @group legacy
      */
     public function can_use_traditional_naming_method(): void
     {

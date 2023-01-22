@@ -28,9 +28,7 @@ final class CommandSummarySubscriberTest extends KernelTestCase
      */
     public function can_add_summary_subscriber(): void
     {
-        self::bootKernel();
-
-        self::$kernel->getContainer()->get('event_dispatcher')->addSubscriber(new CommandSummarySubscriber());
+        self::getContainer()->get('event_dispatcher')->addSubscriber(new CommandSummarySubscriber());
 
         $this->executeConsoleCommand('service-command foo bar')
             ->assertSuccessful()
@@ -45,9 +43,7 @@ final class CommandSummarySubscriberTest extends KernelTestCase
      */
     public function can_disable_summary_with_custom_subscriber(): void
     {
-        self::bootKernel();
-
-        self::$kernel->getContainer()->get('event_dispatcher')->addSubscriber(new CustomCommandSummarySubscriber());
+        self::getContainer()->get('event_dispatcher')->addSubscriber(new CustomCommandSummarySubscriber());
 
         $this->executeConsoleCommand('service-command foo bar')
             ->assertSuccessful()

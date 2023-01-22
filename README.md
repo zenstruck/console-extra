@@ -165,7 +165,7 @@ class CreateUserCommand extends InvokableServiceCommand
 ### `ConfigureWithAttributes`
 
 Use this trait to use the `Argument` and `Option` attributes to configure your command's
-arguments and options (_PHP 8+ required_):
+arguments and options:
 
 ```php
 use Symfony\Component\Console\Command\Command;
@@ -182,9 +182,6 @@ class MyCommand extends Command
     use ConfigureWithAttributes;
 }
 ```
-
-> **Note**
-> This trait is incompatible with [`ConfigureWithDocblocks`](#configurewithdocblocks).
 
 #### Invokable Attributes
 
@@ -231,113 +228,6 @@ class MyCommand extends Command
 > **Note**
 > Option/Argument _modes_ and _defaults_ are detected from the parameter's type-hint/default value
 > and cannot be defined on the attribute.
-
-### `AutoName`
-
-Use this trait to have your command's name auto-generated from the class name:
-
-```php
-use Symfony\Component\Console\Command\Command;
-use Zenstruck\Console\AutoName;
-
-class CreateUserCommand extends Command
-{
-    use AutoName; // command's name will be "app:create-user"
-}
-```
-
-By default, the command name's prefix is `app:`. You can customize with your own
-prefix (or none at all) by overriding the `autoNamePrefix()` method from the
-`AutoName` trait:
-
-```php
-use Symfony\Component\Console\Command\Command;
-use Zenstruck\Console\AutoName;
-
-class CreateUserCommand extends Command
-{
-    use AutoName; // command's name will be "create-user"
-
-    protected static function autoNamePrefix(): string
-    {
-        return '';
-    }
-}
-```
-
-### `ConfigureWithDocblocks`
-
-> **Note**
-> This trait is deprecated when using with PHP 8+ and will be removed in 2.0.
-> Use [`ConfigureWithAttributes`](#configurewithattributes) instead.
-
-Use this trait to allow your command to be configured by your command class' docblock.
-`phpdocumentor/reflection-docblock` is required for this feature
-(`composer install phpdocumentor/reflection-docblock`).
-
-**Example:**
-
-```php
-use Symfony\Component\Console\Command\Command;
-use Zenstruck\Console\ConfigureWithDocblocks;
-
-/**
- * This is the command's description.
- *
- * This is the command help
- *
- * Multiple
- *
- * lines allowed.
- *
- * @command my:command
- * @alias alias1
- * @alias alias2
- * @hidden
- *
- * @argument arg1 First argument is required (this is the argument's "description")
- * @argument ?arg2 Second argument is optional
- * @argument arg3=default Third argument is optional with a default value
- * @argument arg4="default with space" Forth argument is "optional" with a default value (with spaces)
- * @argument ?arg5[] Fifth argument is an optional array
- *
- * @option option1 First option (no value) (this is the option's "description")
- * @option option2= Second option (value required)
- * @option option3=default Third option with default value
- * @option option4="default with space" Forth option with "default" value (with spaces)
- * @option o|option5[] Fifth option is an array with a shortcut (-o)
- */
-class MyCommand extends Command
-{
-    use ConfigureWithDocblocks;
-}
-```
-
-> **Note**
-> 1. If the `@command` tag is absent, [AutoName](#autoname) is used.
-> 2. All the configuration can be disabled by using the traditional methods of configuring your command.
-> 3. Command's are still [lazy](https://symfony.com/blog/new-in-symfony-3-4-lazy-commands) using this method of
->    configuration but there is overhead in parsing the docblocks so be aware of this.
-> 4. This trait is incompatible with [`ConfigureWithAttributes`](#configurewithattributes).
-
-#### `@command` Tag
-
-You can pack all the above into a single `@command` tag. This can act like _routing_ for your console:
-
-```php
-/**
- * @command |app:my:command|alias1|alias2 arg1 ?arg2 arg3=default arg4="default with space" ?arg5[] --option1 --option2= --option3=default --option4="default with space" --o|option5[]
- */
-class MyCommand extends Command
-{
-    use ConfigureWithDocblocks;
-}
-```
-
-> **Note**
-> 1. The `|` prefix makes the command hidden.
-> 2. Argument/Option descriptions are not allowed.
-> 3. It is recommended to only do this for very simple commands as it isn't as explicit as splitting the tags out.
 
 ### `CommandRunner`
 
