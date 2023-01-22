@@ -52,12 +52,12 @@ final class InvokableTest extends TestCase
                     bool $opt2,
                     ?string $optional = null
                 ) {
-                    $io->comment(\sprintf('IO: %s', \get_class($io)));
+                    $io->comment(\sprintf('IO: %s', $io::class));
                     $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
-                    $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
-                    $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
-                    $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
-                    $io->comment(\sprintf('none: %s', \get_class($none)));
+                    $io->comment(\sprintf('InputInterface: %s', $input::class));
+                    $io->comment(\sprintf('OutputInterface: %s', $output::class));
+                    $io->comment(\sprintf('StyleInterface: %s', $style::class));
+                    $io->comment(\sprintf('none: %s', $none::class));
                     $io->comment(\sprintf('arg1: %s', \var_export($arg1, true)));
                     $io->comment(\sprintf('arg2: %s', \var_export($arg2, true)));
                     $io->comment(\sprintf('opt1: %s', \var_export($opt1, true)));
@@ -184,13 +184,13 @@ final class InvokableTest extends TestCase
         $command = (new class() extends InvokableCommand {
             public function __invoke(IO $io, CustomIO $custom, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
             {
-                $io->comment(\sprintf('IO: %s', \get_class($io)));
+                $io->comment(\sprintf('IO: %s', $io::class));
                 $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));
-                $io->comment(\sprintf('CustomIO: %s', \get_class($custom)));
-                $io->comment(\sprintf('InputInterface: %s', \get_class($input)));
-                $io->comment(\sprintf('OutputInterface: %s', \get_class($output)));
-                $io->comment(\sprintf('StyleInterface: %s', \get_class($style)));
-                $io->comment(\sprintf('none: %s', \get_class($none)));
+                $io->comment(\sprintf('CustomIO: %s', $custom::class));
+                $io->comment(\sprintf('InputInterface: %s', $input::class));
+                $io->comment(\sprintf('OutputInterface: %s', $output::class));
+                $io->comment(\sprintf('StyleInterface: %s', $style::class));
+                $io->comment(\sprintf('none: %s', $none::class));
                 $io->success('Success!');
             }
         })->addArgumentFactory(IO::class, fn($input, $output) => new CustomIO($input, $output));
@@ -219,8 +219,8 @@ final class InvokableTest extends TestCase
             new class() extends InvokableCommand {
                 public function __invoke(OutputStyle $output, SymfonyStyle $style)
                 {
-                    $output->text(\sprintf('OutputStyle: %s', get_debug_type($output)));
-                    $output->text(\sprintf('SymfonyStyle: %s', get_debug_type($style)));
+                    $output->text(\sprintf('OutputStyle: %s', \get_debug_type($output)));
+                    $output->text(\sprintf('SymfonyStyle: %s', \get_debug_type($style)));
                 }
             })
             ->execute()

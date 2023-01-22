@@ -108,7 +108,7 @@ trait Invokable
         }
 
         if (!\is_int($return)) {
-            throw new \LogicException(\sprintf('"%s::__invoke()" must return void|null|int. Got "%s".', static::class, get_debug_type($return)));
+            throw new \LogicException(\sprintf('"%s::__invoke()" must return void|null|int. Got "%s".', static::class, \get_debug_type($return)));
         }
 
         return $return;

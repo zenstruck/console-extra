@@ -61,7 +61,7 @@ final class CommandRunner
         }
 
         foreach ($application->all() as $commandObject) {
-            if ($command === \get_class($commandObject)) {
+            if ($command === $commandObject::class) {
                 return new self($commandObject);
             }
         }
