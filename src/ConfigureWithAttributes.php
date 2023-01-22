@@ -21,10 +21,6 @@ trait ConfigureWithAttributes
 {
     protected function configure(): void
     {
-        if (\PHP_VERSION_ID < 80000) {
-            throw new \LogicException(\sprintf('PHP 8+ required to use %s.', ConfigureWithAttributes::class));
-        }
-
         $class = new \ReflectionClass($this);
 
         foreach ($class->getAttributes(Argument::class) as $attribute) {

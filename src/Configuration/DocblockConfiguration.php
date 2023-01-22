@@ -50,9 +50,7 @@ final class DocblockConfiguration
         $this->class = new \ReflectionClass($class);
         $this->docblock = self::factory()->create($this->class->getDocComment() ?: ' '); // hack to allow empty docblock
 
-        if (\PHP_VERSION_ID >= 80000) {
-            trigger_deprecation('zenstruck/console-extra', '1.1', 'The %s trait is deprecated and will be removed in 2.0. Use %s instead.', ConfigureWithDocblocks::class, ConfigureWithAttributes::class);
-        }
+        trigger_deprecation('zenstruck/console-extra', '1.1', 'The %s trait is deprecated and will be removed in 2.0. Use %s instead.', ConfigureWithDocblocks::class, ConfigureWithAttributes::class);
     }
 
     /**
