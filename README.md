@@ -229,39 +229,6 @@ class MyCommand extends Command
 > Option/Argument _modes_ and _defaults_ are detected from the parameter's type-hint/default value
 > and cannot be defined on the attribute.
 
-### `AutoName`
-
-Use this trait to have your command's name auto-generated from the class name:
-
-```php
-use Symfony\Component\Console\Command\Command;
-use Zenstruck\Console\AutoName;
-
-class CreateUserCommand extends Command
-{
-    use AutoName; // command's name will be "app:create-user"
-}
-```
-
-By default, the command name's prefix is `app:`. You can customize with your own
-prefix (or none at all) by overriding the `autoNamePrefix()` method from the
-`AutoName` trait:
-
-```php
-use Symfony\Component\Console\Command\Command;
-use Zenstruck\Console\AutoName;
-
-class CreateUserCommand extends Command
-{
-    use AutoName; // command's name will be "create-user"
-
-    protected static function autoNamePrefix(): string
-    {
-        return '';
-    }
-}
-```
-
 ### `CommandRunner`
 
 A `CommandRunner` object is available to simplify running commands anywhere (ie controller):

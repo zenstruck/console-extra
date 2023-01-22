@@ -24,6 +24,8 @@ trait AutoName
 {
     public static function getDefaultName(): string
     {
+        trigger_deprecation('zenstruck/console-extra', '1.2', 'The %s trait is deprecated and will be removed in 2.0. There is no replacement.', AutoName::class);
+
         if ($name = parent::getDefaultName()) {
             return $name;
         }
