@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v1.2.0](https://github.com/zenstruck/console-extra/releases/tag/v1.2.0)
+
+March 23rd, 2023 - [v1.1.0...v1.2.0](https://github.com/zenstruck/console-extra/compare/v1.1.0...v1.2.0)
+
+* d5737dc feat: allow DI attributes for `__invoke()` parameters (#44) by @kbond
+* 8f6b2de feat: deprecate `AutoName` (#47) by @kbond
+* 972a621 feat: require php 8+, symfony 5.4+ (#47) by @kbond
+* fee7613 fix(ci): add token by @kbond
+* 5958c69 fix: `getSubscribedServices()` can return `SubscribedService[]` by @kbond
+* 746a378 chore(ci): fix by @kbond
+* cb1c789 fix: ci (#46) by @kbond
+* 5fe180f chore: update ci config (#45) by @kbond
+* 100885c ci: fix (#42) by @kbond
+* ede0130 minor: adjust min symfony/string req (#42) by @kbond
+
 ## [v1.1.0](https://github.com/zenstruck/console-extra/releases/tag/v1.1.0)
 
 July 12th, 2022 - [v1.0.1...v1.1.0](https://github.com/zenstruck/console-extra/compare/v1.0.1...v1.1.0)
