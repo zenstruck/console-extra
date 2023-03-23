@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\DependencyInjection\TypedReference;
 use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
@@ -38,10 +39,12 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
     public static function getSubscribedServices(): array
     {
+        $supportsAttributes = self::supportsAttributes();
+
         $services = \array_values(
             \array_filter(
                 \array_map(
-                    static function(\ReflectionParameter $parameter): ?string {
+                    static function(\ReflectionParameter $parameter) use ($supportsAttributes) {
                         if (!$type = $parameter->getType()) {
                             return null;
                         }
@@ -64,7 +67,13 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
                             return null;
                         }
 
-                        return $type->allowsNull() ? '?'.$name : $name;
+                        if (!$supportsAttributes) {
+                            return $type->allowsNull() ? '?'.$name : $name;
+                        }
+
+                        $attributes = \array_map(static fn(\ReflectionAttribute $a) => $a->newInstance(), $parameter->getAttributes());
+
+                        return new SubscribedService('invoke:'.$parameter->name, $name, $type->allowsNull(), $attributes); // @phpstan-ignore-line
                     },
                     self::invokeParameters()
                 )
@@ -97,21 +106,40 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
         return $this->invokableExecute($input, $output);
     }
 
-    /**
-     * @required
-     */
     #[Required]
     public function setInvokeContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
-    /**
-     * @return mixed
-     */
-    final protected function parameter(string $name)
+    final protected function parameter(string $name): mixed
     {
         return $this->container()->get(ParameterBagInterface::class)->get($name);
+    }
+
+    private static function supportsAttributes(): bool
+    {
+        if (!$constructor = (new \ReflectionClass(TypedReference::class))->getConstructor()) {
+            return false;
+        }
+
+        // super hacky... but it's the only way currently to detect if symfony/di supports SubscribedService with attributes
+        return $constructor->getNumberOfParameters() > 4;
+    }
+
+    /**
+     * @return array{0:string,1:bool}
+     */
+    private static function parseServiceId(string|SubscribedService $service): array
+    {
+        if ($service instanceof SubscribedService) {
+            return [(string) $service->key, $service->nullable];
+        }
+
+        return [
+            \ltrim($service, '?'),
+            \str_starts_with($service, '?'),
+        ];
     }
 
     private function container(): ContainerInterface
@@ -121,22 +149,5 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
         }
 
         return $this->container;
-    }
-
-    /**
-     * @param string|SubscribedService $service
-     *
-     * @return array{0:string,1:bool}
-     */
-    private static function parseServiceId($service): array
-    {
-        if ($service instanceof SubscribedService) {
-            return [(string) $service->type, $service->nullable];
-        }
-
-        return [
-            \ltrim($service, '?'),
-            \str_starts_with($service, '?'),
-        ];
     }
 }

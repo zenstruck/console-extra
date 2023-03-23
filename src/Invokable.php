@@ -74,6 +74,10 @@ trait Invokable
                     );
                 }
 
+                if (isset($this->argumentFactories[$key = 'invoke:'.$parameter->name])) {
+                    return $this->argumentFactories[$key]();
+                }
+
                 if (!$type || $type->isBuiltin()) {
                     $name = $parameter->name;
 
