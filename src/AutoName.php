@@ -41,8 +41,7 @@ trait AutoName
             ->replace('_', '-')
             ->beforeLast('-command')
             ->prepend(static::autoNamePrefix())
-            ->toString()
-        ;
+            ->toString();
     }
 
     /**
