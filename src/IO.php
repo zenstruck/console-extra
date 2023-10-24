@@ -137,8 +137,6 @@ class IO extends SymfonyStyle implements InputInterface
      * @param string|string[] $values
      * @param mixed           $default
      * @param bool            $onlyParams
-     *
-     * @return mixed
      */
     public function getParameterOption($values, $default = false, $onlyParams = false): mixed
     {
