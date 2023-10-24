@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Zenstruck\Console\Configuration\DocblockConfiguration;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameDocblockCommand;
 use Zenstruck\Console\Tests\Fixture\Command\DocblockCommand;
+use Zenstruck\Console\Tests\Fixture\Kernel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -158,6 +159,10 @@ final class ConfigureWithDocblocksTest extends TestCase
      */
     public function can_override_docblock_configuration_with_traditional_configuration(): void
     {
+        if (Kernel::MAJOR_VERSION > 6) {
+            $this->markTestSkipped();
+        }
+
         /**
          * Not used description.
          *
