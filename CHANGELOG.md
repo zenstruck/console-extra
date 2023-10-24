@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [v1.3.0](https://github.com/zenstruck/console-extra/releases/tag/v1.3.0)
+
+October 24th, 2023 - [v1.2.0...v1.3.0](https://github.com/zenstruck/console-extra/compare/v1.2.0...v1.3.0)
+
+* 2710f11 feat: Symfony 7 support (#57) by @kbond
+
 ## [v1.2.0](https://github.com/zenstruck/console-extra/releases/tag/v1.2.0)
 
 March 23rd, 2023 - [v1.1.0...v1.2.0](https://github.com/zenstruck/console-extra/compare/v1.1.0...v1.2.0)
