@@ -105,7 +105,7 @@ trait Invokable
             self::invokeParameters(),
         );
 
-        $return = Callback::createFor($this)->invoke(...$parameters);
+        $return = Callback::createFor($this)->invoke(...$parameters); // @phpstan-ignore-line
 
         if (null === $return) {
             $return = 0; // assume 0

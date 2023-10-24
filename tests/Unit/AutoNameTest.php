@@ -16,6 +16,7 @@ use Symfony\Component\Console\Command\Command;
 use Zenstruck\Console\AutoName;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameCommand;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameNoPrefixCommand;
+use Zenstruck\Console\Tests\Fixture\Kernel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -47,6 +48,10 @@ final class AutoNameTest extends TestCase
      */
     public function can_use_traditional_naming_method(): void
     {
+        if (Kernel::MAJOR_VERSION > 6) {
+            $this->markTestSkipped();
+        }
+
         $command = new class() extends Command {
             use AutoName;
 

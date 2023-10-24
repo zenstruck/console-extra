@@ -105,20 +105,16 @@ class IO extends SymfonyStyle implements InputInterface
 
     /**
      * Alias for {@see getArgument()}.
-     *
-     * @return mixed
      */
-    public function argument(string $name)
+    public function argument(string $name): mixed
     {
         return $this->getArgument($name);
     }
 
     /**
      * Alias for {@see getOption()}.
-     *
-     * @return mixed
      */
-    public function option(string $name)
+    public function option(string $name): mixed
     {
         return $this->getOption($name);
     }
@@ -144,7 +140,7 @@ class IO extends SymfonyStyle implements InputInterface
      *
      * @return mixed
      */
-    public function getParameterOption($values, $default = false, $onlyParams = false)
+    public function getParameterOption($values, $default = false, $onlyParams = false): mixed
     {
         return $this->input->getParameterOption($values, $default, $onlyParams);
     }
@@ -169,10 +165,8 @@ class IO extends SymfonyStyle implements InputInterface
 
     /**
      * @param string $name
-     *
-     * @return mixed
      */
-    public function getArgument($name)
+    public function getArgument($name): mixed
     {
         return $this->input->getArgument($name);
     }
@@ -204,10 +198,8 @@ class IO extends SymfonyStyle implements InputInterface
 
     /**
      * @param string $name
-     *
-     * @return mixed
      */
-    public function getOption($name)
+    public function getOption($name): mixed
     {
         return $this->input->getOption($name);
     }
