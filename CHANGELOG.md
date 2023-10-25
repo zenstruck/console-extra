@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [v1.3.1](https://github.com/zenstruck/console-extra/releases/tag/v1.3.1)
+
+October 25th, 2023 - [v1.3.0...v1.3.1](https://github.com/zenstruck/console-extra/compare/v1.3.0...v1.3.1)
+
+* e63454e fix: Update composer.json to allow symfony 7 for string component (#58) by @tacman
+
 ## [v1.3.0](https://github.com/zenstruck/console-extra/releases/tag/v1.3.0)
 
 October 24th, 2023 - [v1.2.0...v1.3.0](https://github.com/zenstruck/console-extra/compare/v1.2.0...v1.3.0)
