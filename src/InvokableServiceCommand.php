@@ -75,9 +75,9 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
                         return new SubscribedService('invoke:'.$parameter->name, $name, $type->allowsNull(), $attributes); // @phpstan-ignore-line
                     },
-                    self::invokeParameters()
-                )
-            )
+                    self::invokeParameters(),
+                ),
+            ),
         );
 
         return [...$services, ParameterBagInterface::class];

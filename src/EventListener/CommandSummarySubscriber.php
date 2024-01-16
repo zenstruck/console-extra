@@ -73,7 +73,7 @@ class CommandSummarySubscriber implements EventSubscriberInterface
     {
         $output->writeln(\sprintf(" // Duration: <info>%s</info>, Peak Memory: <info>%s</info>\n",
             Helper::formatTime($duration),
-            Helper::formatMemory(\memory_get_peak_usage(true))
+            Helper::formatMemory(\memory_get_peak_usage(true)),
         ));
     }
 }

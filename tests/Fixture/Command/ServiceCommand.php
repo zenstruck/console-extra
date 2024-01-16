@@ -39,7 +39,7 @@ final class ServiceCommand extends InvokableServiceCommand
         string $env,
         LoggerInterface $logger,
         ?RouterInterface $router = null,
-        ?Table $optional = null
+        ?Table $optional = null,
     ): void {
         $io->comment(\sprintf('IO: %s', \get_debug_type($io)));
         $io->comment(\sprintf('InputInterface: %s', \get_debug_type($input)));

@@ -70,9 +70,9 @@ final class IOTest extends TestCase
         $io = new IO(
             new ArrayInput(
                 ['foo' => 'bar', '--bar' => 'foobar'],
-                new InputDefinition([new InputArgument('foo'), new InputOption('bar')])
+                new InputDefinition([new InputArgument('foo'), new InputOption('bar')]),
             ),
-            new NullOutput()
+            new NullOutput(),
         );
 
         $this->assertSame('bar', $io->argument('foo'));

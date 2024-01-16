@@ -50,7 +50,7 @@ final class InvokableTest extends TestCase
                     string $arg2,
                     $opt1,
                     bool $opt2,
-                    ?string $optional = null
+                    ?string $optional = null,
                 ) {
                     $io->comment(\sprintf('IO: %s', $io::class));
                     $io->comment(\sprintf('$this->io(): %s', \get_class($this->io())));

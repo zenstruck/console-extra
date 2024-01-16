@@ -135,11 +135,11 @@ final class ConfigureWithAttributesTest extends TestCase
                 }
 
                 public function __invoke(
-                    #[Option] ?bool $foo
+                    #[Option] ?bool $foo,
                 ): void {
                     $this->io()->writeln(\sprintf('foo: %s', \var_export($foo, true)));
                 }
-            }
+            },
         );
 
         $command->execute()
@@ -174,12 +174,12 @@ final class ConfigureWithAttributesTest extends TestCase
 
                 public function __invoke(
                     #[Argument('custom-foo')] ?string $foo,
-                    #[Option('custom-bar')] bool $bar
+                    #[Option('custom-bar')] bool $bar,
                 ): void {
                     $this->io()->writeln(\sprintf('foo: %s', \var_export($foo, true)));
                     $this->io()->writeln(\sprintf('bar: %s', \var_export($bar, true)));
                 }
-            }
+            },
         );
 
         $command->execute()
@@ -212,7 +212,7 @@ final class ConfigureWithAttributesTest extends TestCase
             }
 
             public function __invoke(
-                #[Argument(mode: InputArgument::REQUIRED)] $foo
+                #[Argument(mode: InputArgument::REQUIRED)] $foo,
             ): void {
             }
         };
@@ -235,7 +235,7 @@ final class ConfigureWithAttributesTest extends TestCase
             }
 
             public function __invoke(
-                #[Argument(default: true)] $foo
+                #[Argument(default: true)] $foo,
             ): void {
             }
         };
@@ -258,7 +258,7 @@ final class ConfigureWithAttributesTest extends TestCase
             }
 
             public function __invoke(
-                #[Option(mode: InputArgument::REQUIRED)] $foo
+                #[Option(mode: InputArgument::REQUIRED)] $foo,
             ): void {
             }
         };
@@ -281,7 +281,7 @@ final class ConfigureWithAttributesTest extends TestCase
             }
 
             public function __invoke(
-                #[Option(default: true)] $foo
+                #[Option(default: true)] $foo,
             ): void {
             }
         };
@@ -306,7 +306,7 @@ final class ConfigureWithAttributesTest extends TestCase
             public function __invoke(
                 #[Option]
                 #[Option]
-                $foo
+                $foo,
             ): void {
             }
         };
@@ -331,7 +331,7 @@ final class ConfigureWithAttributesTest extends TestCase
             public function __invoke(
                 #[Argument]
                 #[Argument]
-                $foo
+                $foo,
             ): void {
             }
         };
@@ -378,7 +378,7 @@ class WithParameterAttributesCommand extends Command
         string $option3 = 'default',
 
         #[Option('option4', shortcut: 'o', description: 'Fourth option is an array with a shortcut (-o)')]
-        array $bar = []
+        array $bar = [],
     ) {
     }
 }

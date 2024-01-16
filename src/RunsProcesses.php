@@ -44,7 +44,7 @@ trait RunsProcesses
         if (\mb_strlen($commandLine) > $maxLength) {
             $commandLine = \sprintf('%s...%s',
                 \mb_substr($commandLine, 0, (int) \ceil($maxLength / 2)),
-                \mb_substr($commandLine, 0 - (int) \floor($maxLength / 2) - 3) // accommodate "..."
+                \mb_substr($commandLine, 0 - (int) \floor($maxLength / 2) - 3), // accommodate "..."
             );
         }
 
@@ -58,7 +58,7 @@ trait RunsProcesses
                     $last = \sprintf('<%s>%s</%1$s> %s',
                         Process::ERR === $type ? 'error' : 'comment',
                         \mb_strtoupper($type),
-                        $line
+                        $line,
                     );
 
                     $this->io()->text($last);
