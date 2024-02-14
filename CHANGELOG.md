@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [v1.3.3](https://github.com/zenstruck/console-extra/releases/tag/v1.3.3)
+
+February 14th, 2024 - [v1.3.2...v1.3.3](https://github.com/zenstruck/console-extra/compare/v1.3.2...v1.3.3)
+
+* 4053813 fix: don't autowire `Option|Attribute` (#61) by @kbond
+
 ## [v1.3.2](https://github.com/zenstruck/console-extra/releases/tag/v1.3.2)
 
 February 14th, 2024 - [v1.3.1...v1.3.2](https://github.com/zenstruck/console-extra/compare/v1.3.1...v1.3.2)
