@@ -34,12 +34,14 @@ final class WithAttributesServiceCommandTest extends KernelTestCase
      */
     public function services_injected(): void
     {
-        $this->executeConsoleCommand('with-attributes-service-command')
+        $this->executeConsoleCommand('with-attributes-service-command foo bar')
             ->assertSuccessful()
             ->assertOutputContains('Imp1: implementation1')
             ->assertOutputContains('Imp2: implementation2')
             ->assertOutputContains('Env: test')
             ->assertOutputContains('Debug: true')
+            ->assertOutputContains('Arg1: foo')
+            ->assertOutputContains('Arg2: bar')
         ;
     }
 }
