@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [v1.3.2](https://github.com/zenstruck/console-extra/releases/tag/v1.3.2)
+
+February 14th, 2024 - [v1.3.1...v1.3.2](https://github.com/zenstruck/console-extra/compare/v1.3.1...v1.3.2)
+
+* 70e4b6a fix: autowiring non-service arguments (#60) by @kbond
+
 ## [v1.3.1](https://github.com/zenstruck/console-extra/releases/tag/v1.3.1)
 
 October 25th, 2023 - [v1.3.0...v1.3.1](https://github.com/zenstruck/console-extra/compare/v1.3.0...v1.3.1)
