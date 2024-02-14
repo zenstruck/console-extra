@@ -34,10 +34,14 @@ final class WithAttributesServiceCommand extends InvokableServiceCommand
         AnInterface $imp,
 
         #[Autowire('%kernel.environment%')]
-        string $env,
+        string $environment,
+
+        #[Autowire('%kernel.debug%')]
+        bool $debug,
     ): void {
         $io->comment('Imp1: '.$imp1->get());
         $io->comment('Imp2: '.$imp->get());
-        $io->comment('Env: '.$env);
+        $io->comment('Env: '.$environment);
+        $io->comment('Debug: '.\var_export($debug, true));
     }
 }

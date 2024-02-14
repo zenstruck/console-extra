@@ -49,7 +49,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
                             return null;
                         }
 
-                        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+                        if (!$type instanceof \ReflectionNamedType) {
                             return null;
                         }
 
@@ -67,11 +67,19 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
                             return null;
                         }
 
+                        if (!$supportsAttributes && $type->isBuiltin()) {
+                            return null;
+                        }
+
                         if (!$supportsAttributes) {
                             return $type->allowsNull() ? '?'.$name : $name;
                         }
 
                         $attributes = \array_map(static fn(\ReflectionAttribute $a) => $a->newInstance(), $parameter->getAttributes());
+
+                        if (!$attributes && $type->isBuiltin()) {
+                            return null; // an attribute (ie Autowire) is required for built-in types
+                        }
 
                         return new SubscribedService('invoke:'.$parameter->name, $name, $type->allowsNull(), $attributes); // @phpstan-ignore-line
                     },
