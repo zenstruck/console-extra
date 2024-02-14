@@ -39,6 +39,7 @@ final class WithAttributesServiceCommandTest extends KernelTestCase
             ->assertOutputContains('Imp1: implementation1')
             ->assertOutputContains('Imp2: implementation2')
             ->assertOutputContains('Env: test')
+            ->assertOutputContains('Debug: true')
         ;
     }
 }
