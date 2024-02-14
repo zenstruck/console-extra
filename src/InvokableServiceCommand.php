@@ -22,6 +22,8 @@ use Symfony\Component\DependencyInjection\TypedReference;
 use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
+use Zenstruck\Console\Attribute\Argument;
+use Zenstruck\Console\Attribute\Option;
 
 /**
  * All the benefits of {@see Invokable} but also allows for auto-injection of
@@ -73,6 +75,10 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
 
                         if (!$supportsAttributes) {
                             return $type->allowsNull() ? '?'.$name : $name;
+                        }
+
+                        if ($parameter->getAttributes(Option::class) || $parameter->getAttributes(Argument::class)) {
+                            return null; // don't auto-inject options/arguments
                         }
 
                         $attributes = \array_map(static fn(\ReflectionAttribute $a) => $a->newInstance(), $parameter->getAttributes());
