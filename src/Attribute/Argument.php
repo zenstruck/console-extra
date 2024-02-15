@@ -19,7 +19,7 @@ use function Symfony\Component\String\s;
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_PARAMETER | \Attribute::IS_REPEATABLE)]
-final class Argument
+class Argument
 {
     /**
      * @see InputArgument::__construct()
@@ -37,9 +37,9 @@ final class Argument
      *
      * @return mixed[]|null
      */
-    public static function parseParameter(\ReflectionParameter $parameter): ?array
+    final public static function parseParameter(\ReflectionParameter $parameter): ?array
     {
-        if (!$attributes = $parameter->getAttributes(self::class)) {
+        if (!$attributes = $parameter->getAttributes(self::class, \ReflectionAttribute::IS_INSTANCEOF)) {
             return null;
         }
 
@@ -82,7 +82,7 @@ final class Argument
      *
      * @return mixed[]
      */
-    public function values(): array
+    final public function values(): array
     {
         if (!$this->name) {
             throw new \LogicException(\sprintf('A $name is required when using %s as a command class attribute.', self::class));

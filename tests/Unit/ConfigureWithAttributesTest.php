@@ -20,6 +20,8 @@ use Zenstruck\Console\Attribute\Option;
 use Zenstruck\Console\ConfigureWithAttributes;
 use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\Test\TestCommand;
+use Zenstruck\Console\Tests\Fixture\Attribute\CustomArgument;
+use Zenstruck\Console\Tests\Fixture\Attribute\CustomOption;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -338,6 +340,25 @@ final class ConfigureWithAttributesTest extends TestCase
             ->execute()
             ->assertSuccessful()
         ;
+    }
+
+    /**
+     * @test
+     */
+    public function can_use_custom_argument_and_option_attributes(): void
+    {
+        $command = new class('command') extends Command {
+            use ConfigureWithAttributes;
+
+            public function __invoke(
+                #[CustomArgument('arg description')] string $foo,
+                #[CustomOption('opt description')] bool $bar,
+            ) {
+            }
+        };
+
+        $this->assertSame('arg description', $command->getDefinition()->getArgument('foo')->getDescription());
+        $this->assertSame('opt description', $command->getDefinition()->getOption('bar')->getDescription());
     }
 }
 

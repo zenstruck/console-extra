@@ -21,17 +21,17 @@ trait ConfigureWithAttributes
 {
     protected function configure(): void
     {
-        if (InvokableCommand::class !== self::class && $this instanceof InvokableCommand) {
+        if (InvokableCommand::class !== self::class && $this instanceof InvokableCommand) { // @phpstan-ignore-line
             trigger_deprecation('zenstruck/console-extra', '1.4', 'You can safely remove "%s" from "%s".', __TRAIT__, $this::class);
         }
 
         $class = new \ReflectionClass($this);
 
-        foreach ($class->getAttributes(Argument::class) as $attribute) {
+        foreach ($class->getAttributes(Argument::class, \ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             $this->addArgument(...$attribute->newInstance()->values());
         }
 
-        foreach ($class->getAttributes(Option::class) as $attribute) {
+        foreach ($class->getAttributes(Option::class, \ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             $this->addOption(...$attribute->newInstance()->values());
         }
 

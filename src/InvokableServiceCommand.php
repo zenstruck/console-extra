@@ -63,7 +63,7 @@ abstract class InvokableServiceCommand extends InvokableCommand implements Servi
                             return null;
                         }
 
-                        if ($parameter->getAttributes(Option::class) || $parameter->getAttributes(Argument::class)) {
+                        if ($parameter->getAttributes(Option::class, \ReflectionAttribute::IS_INSTANCEOF) || $parameter->getAttributes(Argument::class, \ReflectionAttribute::IS_INSTANCEOF)) {
                             return null; // don't auto-inject options/arguments
                         }
 
