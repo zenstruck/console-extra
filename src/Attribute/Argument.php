@@ -13,6 +13,8 @@ namespace Zenstruck\Console\Attribute;
 
 use Symfony\Component\Console\Input\InputArgument;
 
+use function Symfony\Component\String\s;
+
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
@@ -47,6 +49,11 @@ final class Argument
 
         /** @var self $value */
         $value = $attributes[0]->newInstance();
+
+        if (!$value->name && $parameter->name !== s($parameter->name)->snake()->replace('_', '-')->toString()) {
+            trigger_deprecation('zenstruck/console-extra', '1.4', 'Argument names will default to kebab-case in 2.0. Specify the name in #[Argument] explicitly to remove this deprecation.');
+        }
+
         $value->name ??= $parameter->name;
 
         if ($value->mode) {

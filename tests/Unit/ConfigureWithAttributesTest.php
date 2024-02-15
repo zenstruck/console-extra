@@ -332,6 +332,64 @@ final class ConfigureWithAttributesTest extends TestCase
             }
         };
     }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function kebab_case_argument_deprecation(): void
+    {
+        $command = TestCommand::for(
+            new class() extends Command {
+                use ConfigureWithAttributes, Invokable;
+
+                public static function getDefaultName(): ?string
+                {
+                    return 'command';
+                }
+
+                public function __invoke(
+                    #[Argument] string $fooBar,
+                ): void {
+                    $this->io()->comment('fooBar: '.$fooBar);
+                }
+            },
+        );
+
+        $command->execute('value')
+            ->assertSuccessful()
+            ->assertOutputContains('fooBar: value')
+        ;
+    }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function kebab_case_option_deprecation(): void
+    {
+        $command = TestCommand::for(
+            new class() extends Command {
+                use ConfigureWithAttributes, Invokable;
+
+                public static function getDefaultName(): ?string
+                {
+                    return 'command';
+                }
+
+                public function __invoke(
+                    #[Option] string $fooBar,
+                ): void {
+                    $this->io()->comment('fooBar: '.$fooBar);
+                }
+            },
+        );
+
+        $command->execute('--fooBar=value')
+            ->assertSuccessful()
+            ->assertOutputContains('fooBar: value')
+        ;
+    }
 }
 
 #[Argument('arg1', InputArgument::REQUIRED, 'First argument is required')]
