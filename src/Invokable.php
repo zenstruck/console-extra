@@ -132,7 +132,7 @@ trait Invokable
     {
         try {
             return (new \ReflectionClass(static::class))->getMethod('__invoke')->getParameters();
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             throw new \LogicException(\sprintf('"%s" must implement __invoke() to use %s.', static::class, Invokable::class));
         }
     }

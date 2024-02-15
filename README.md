@@ -206,10 +206,24 @@ use Zenstruck\Console\InvokableCommand;
 
 #[Argument('arg1', description: 'Argument 1 description', mode: InputArgument::REQUIRED)]
 #[Argument('arg2', description: 'Argument 1 description')]
+#[Argument('arg3', suggestions: ['suggestion1', 'suggestion2'])] // for auto-completion
+#[Argument('arg4', suggestions: 'suggestionsForArg4')] // use a method on the command to get suggestions
 #[Option('option1', description: 'Option 1 description')]
+#[Option('option2', suggestions: ['suggestion1', 'suggestion2'])] // for auto-completion
+#[Option('option3', suggestions: 'suggestionsForOption3')] // use a method on the command to get suggestions
 class MyCommand extends InvokableCommand
 {
     // ...
+
+    private function suggestionsForArg4(): array
+    {
+        return ['suggestion3', 'suggestion4'];
+    }
+
+    private function suggestionsForOption3(): array
+    {
+        return ['suggestion3', 'suggestion4'];
+    }
 }
 ```
 

@@ -11,6 +11,8 @@
 
 namespace Zenstruck\Console\Attribute;
 
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputOption;
 
 use function Symfony\Component\String\s;
@@ -23,6 +25,8 @@ class Option
 {
     /**
      * @see InputOption::__construct()
+     *
+     * @param string[]|string $suggestions
      */
     public function __construct(
         public ?string $name = null,
@@ -30,6 +34,7 @@ class Option
         private ?int $mode = null,
         private string $description = '',
         private string|bool|int|float|array|null $default = null,
+        private array|string $suggestions = [],
     ) {
     }
 
@@ -38,7 +43,7 @@ class Option
      *
      * @return mixed[]|null
      */
-    final public static function parseParameter(\ReflectionParameter $parameter): ?array
+    final public static function parseParameter(\ReflectionParameter $parameter, Command $command): ?array
     {
         if (!$attributes = $parameter->getAttributes(self::class, \ReflectionAttribute::IS_INSTANCEOF)) {
             return null;
@@ -77,7 +82,7 @@ class Option
             $value->default = $parameter->getDefaultValue();
         }
 
-        return $value->values();
+        return $value->values($command);
     }
 
     /**
@@ -85,12 +90,22 @@ class Option
      *
      * @return mixed[]
      */
-    final public function values(): array
+    final public function values(Command $command): array
     {
         if (!$this->name) {
             throw new \LogicException(\sprintf('A $name is required when using %s as a command class attribute.', self::class));
         }
 
-        return [$this->name, $this->shortcut, $this->mode, $this->description, $this->default];
+        $suggestions = $this->suggestions;
+
+        if (\is_string($suggestions)) {
+            $suggestions = \Closure::bind(
+                fn(CompletionInput $i) => $this->{$suggestions}($i),
+                $command,
+                $command,
+            );
+        }
+
+        return [$this->name, $this->shortcut, $this->mode, $this->description, $this->default, $suggestions];
     }
 }

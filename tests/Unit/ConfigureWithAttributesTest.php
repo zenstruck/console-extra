@@ -13,6 +13,7 @@ namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Zenstruck\Console\Attribute\Argument;
@@ -359,6 +360,68 @@ final class ConfigureWithAttributesTest extends TestCase
 
         $this->assertSame('arg description', $command->getDefinition()->getArgument('foo')->getDescription());
         $this->assertSame('opt description', $command->getDefinition()->getOption('bar')->getDescription());
+    }
+
+    /**
+     * @test
+     */
+    public function configure_argument_suggestions(): void
+    {
+        $command = TestCommand::for(
+            new class('command') extends Command {
+                use ConfigureWithAttributes;
+
+                public function __invoke(
+                    #[Argument(suggestions: ['foo', 'bar'])]
+                    string $arg1,
+
+                    #[Argument(suggestions: 'arg2Suggestions')]
+                    string $arg2,
+                ): void {
+                }
+
+                private function arg2Suggestions(CompletionInput $input): array
+                {
+                    return ['baz', 'qux'];
+                }
+            },
+        );
+
+        $command
+            ->complete('')->is(['foo', 'bar'])->back()
+            ->complete('first ')->is(['baz', 'qux'])->back()
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function configure_option_suggestions(): void
+    {
+        $command = TestCommand::for(
+            new class('command') extends Command {
+                use ConfigureWithAttributes;
+
+                public function __invoke(
+                    #[Option(suggestions: ['foo', 'bar'])]
+                    string $first,
+
+                    #[Option(suggestions: 'secondSuggestions')]
+                    string $second,
+                ): void {
+                }
+
+                private function secondSuggestions(CompletionInput $input): array
+                {
+                    return ['baz', 'qux'];
+                }
+            },
+        );
+
+        $command
+            ->complete('--first=')->is(['foo', 'bar'])->back()
+            ->complete('--second=')->is(['baz', 'qux'])->back()
+        ;
     }
 }
 
