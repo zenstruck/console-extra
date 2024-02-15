@@ -20,14 +20,6 @@ use Zenstruck\Console\Attribute\Argument as ConsoleArgument;
 use Zenstruck\Console\Attribute\Option;
 
 /**
- * Makes your command "invokable" to reduce boilerplate.
- *
- * Auto-injects the following objects into __invoke():
- *
- * @see IO
- * @see InputInterface the "real" input
- * @see OutputInterface the "real" output
- *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 trait Invokable
@@ -132,7 +124,7 @@ trait Invokable
      *
      * @return array<\ReflectionParameter>
      */
-    private static function invokeParameters(): array
+    final protected static function invokeParameters(): array
     {
         try {
             return (new \ReflectionClass(static::class))->getMethod('__invoke')->getParameters();

@@ -13,7 +13,6 @@ namespace Zenstruck\Console;
 
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
@@ -25,17 +24,15 @@ use Zenstruck\Console\Attribute\Argument;
 use Zenstruck\Console\Attribute\Option;
 
 /**
- * All the benefits of {@see Invokable} but also allows for auto-injection of
+ * All the benefits of {@see InvokableCommand} but also allows for auto-injection of
  * any service from your Symfony DI container. You can think of it as
  * "Invokable Service Controllers" (with 'controller.service_arguments') but
  * for commands. Instead of a "Request", you inject {@see IO}.
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-abstract class InvokableServiceCommand extends Command implements ServiceSubscriberInterface
+abstract class InvokableServiceCommand extends InvokableCommand implements ServiceSubscriberInterface
 {
-    use Invokable { execute as private invokableExecute; }
-
     private ContainerInterface $container;
 
     public static function getSubscribedServices(): array
@@ -106,7 +103,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
             $this->addArgumentFactory($serviceId, static fn() => $value);
         }
 
-        return $this->invokableExecute($input, $output);
+        return parent::execute($input, $output);
     }
 
     #[Required]

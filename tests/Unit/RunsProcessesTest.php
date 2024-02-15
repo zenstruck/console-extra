@@ -13,7 +13,7 @@ namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\RunsProcesses;
 use Zenstruck\Console\Test\TestCommand;
 use Zenstruck\Console\Tests\Fixture\Command\RunsProcessesCommand;
@@ -67,8 +67,8 @@ final class RunsProcessesTest extends TestCase
      */
     public function long_command_is_trimmed(): void
     {
-        $command = new class('name') extends Command {
-            use Invokable, RunsProcesses;
+        $command = new class('name') extends InvokableCommand {
+            use RunsProcesses;
 
             public function __invoke(): void
             {

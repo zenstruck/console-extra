@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Zenstruck\Console\Attribute\Argument;
 use Zenstruck\Console\Attribute\Option;
 use Zenstruck\Console\ConfigureWithAttributes;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\Test\TestCommand;
 
 /**
@@ -122,13 +122,8 @@ final class ConfigureWithAttributesTest extends TestCase
     public function negatable_parameter_attribute_options(): void
     {
         $command = TestCommand::for(
-            new class() extends Command {
-                use ConfigureWithAttributes, Invokable;
-
-                public static function getDefaultName(): ?string
-                {
-                    return 'command';
-                }
+            new class('command') extends InvokableCommand {
+                use ConfigureWithAttributes;
 
                 public function __invoke(
                     #[Option] ?bool $foo,
@@ -160,13 +155,8 @@ final class ConfigureWithAttributesTest extends TestCase
     public function can_customize_argument_and_option_names_via_parameter_attribute(): void
     {
         $command = TestCommand::for(
-            new class() extends Command {
-                use ConfigureWithAttributes, Invokable;
-
-                public static function getDefaultName(): ?string
-                {
-                    return 'command';
-                }
+            new class('command') extends InvokableCommand {
+                use ConfigureWithAttributes;
 
                 public function __invoke(
                     #[Argument('custom-foo')] ?string $foo,
@@ -199,13 +189,8 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', Argument::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
+        new class('command') extends InvokableCommand {
+            use ConfigureWithAttributes;
 
             public function __invoke(
                 #[Argument(mode: InputArgument::REQUIRED)] $foo,
@@ -222,13 +207,8 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $default when using %s as a parameter attribute, this is inferred from the parameter\'s default value.', Argument::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
+        new class('command') extends InvokableCommand {
+            use ConfigureWithAttributes;
 
             public function __invoke(
                 #[Argument(default: true)] $foo,
@@ -245,13 +225,8 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', Option::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
+        new class('command') extends InvokableCommand {
+            use ConfigureWithAttributes;
 
             public function __invoke(
                 #[Option(mode: InputArgument::REQUIRED)] $foo,
@@ -268,13 +243,8 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $default when using %s as a parameter attribute, this is inferred from the parameter\'s default value.', Option::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
+        new class('command') extends InvokableCommand {
+            use ConfigureWithAttributes;
 
             public function __invoke(
                 #[Option(default: true)] $foo,
@@ -291,13 +261,8 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('%s cannot be repeated when used as a parameter attribute.', Option::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
+        new class('command') extends InvokableCommand {
+            use ConfigureWithAttributes;
 
             public function __invoke(
                 #[Option]
@@ -316,13 +281,8 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('%s cannot be repeated when used as a parameter attribute.', Argument::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
+        new class('command') extends InvokableCommand {
+            use ConfigureWithAttributes;
 
             public function __invoke(
                 #[Argument]
@@ -340,13 +300,8 @@ final class ConfigureWithAttributesTest extends TestCase
     public function kebab_case_argument_deprecation(): void
     {
         $command = TestCommand::for(
-            new class() extends Command {
-                use ConfigureWithAttributes, Invokable;
-
-                public static function getDefaultName(): ?string
-                {
-                    return 'command';
-                }
+            new class('command') extends InvokableCommand {
+                use ConfigureWithAttributes;
 
                 public function __invoke(
                     #[Argument] string $fooBar,
@@ -369,13 +324,8 @@ final class ConfigureWithAttributesTest extends TestCase
     public function kebab_case_option_deprecation(): void
     {
         $command = TestCommand::for(
-            new class() extends Command {
-                use ConfigureWithAttributes, Invokable;
-
-                public static function getDefaultName(): ?string
-                {
-                    return 'command';
-                }
+            new class('command') extends InvokableCommand {
+                use ConfigureWithAttributes;
 
                 public function __invoke(
                     #[Option] string $fooBar,
@@ -405,9 +355,9 @@ class WithClassAttributesCommand extends Command
     use ConfigureWithAttributes;
 }
 
-class WithParameterAttributesCommand extends Command
+class WithParameterAttributesCommand extends InvokableCommand
 {
-    use ConfigureWithAttributes, Invokable;
+    use ConfigureWithAttributes;
 
     public function __invoke(
         #[Argument(description: 'First argument is required')]
