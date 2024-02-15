@@ -9,7 +9,7 @@ A modular set of features to reduce configuration boilerplate for your Symfony c
 #[AsCommand('create:user', 'Creates a user in the database.')]
 final class CreateUserCommand extends InvokableServiceCommand
 {
-    use ConfigureWithAttributes, RunsCommands, RunsProcesses;
+    use RunsCommands, RunsProcesses;
 
     public function __invoke(
         IO $io,
@@ -53,7 +53,7 @@ composer require zenstruck/console-extra
 
 This library is a set of modular features that can be used separately or in combination.
 
-> **Note**
+> ![NOTE]
 > To reduce command boilerplate even further, it is recommended to create an abstract base command for your
 > app that enables all the features you desire. Then have all your app's commands extend this.
 
@@ -78,9 +78,9 @@ $io->output(); // get the "wrapped" output
 
 On its own, it isn't very special, but it can be auto-injected into [`Invokable`](#invokable) commands.
 
-### `Invokable`
+### `InvokableCommand`
 
-Use this trait to remove the need for extending `Command::execute()` and just inject what your need
+Extend this class to remove the need for extending `Command::execute()` and just inject what your need
 into your command's `__invoke()` method. The following are parameters that can be auto-injected:
 
 - [`Zenstruck\Console\IO`](#io)
@@ -94,13 +94,11 @@ into your command's `__invoke()` method. The following are parameters that can b
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\IO;
 
-class MyCommand extends \Symfony\Component\Console\Command\Command
+class MyCommand extends InvokableCommand
 {
-    use Invokable; // enables this feature
-
     // $username/$roles are the argument/option defined below
     public function __invoke(IO $io, string $username, array $roles)
     {
@@ -137,8 +135,8 @@ public function __invoke(IO $io): int
 
 ### `InvokableServiceCommand`
 
-If using the Symfony Framework, you can take [`Invokable`](#invokable) to the next level by auto-injecting services
-into `__invoke()`. This allows your commands to behave like
+If using the Symfony Framework, you can take [`InvokableCommand`](#invokablecommand) to the next level by
+auto-injecting services into `__invoke()`. This allows your commands to behave like
 [Invokable Service Controllers](https://symfony.com/doc/current/controller/service.html#invokable-controllers)
 (with `controller.service_arguments`). Instead of a _Request_, you inject [`IO`](#io).
 
@@ -164,9 +162,7 @@ class CreateUserCommand extends InvokableServiceCommand
 
 #### Inject with DI Attributes
 
-> **Note**: This feature requires Symfony 6.2+.
-
-In Symfony 6.2+ you can use any
+You can use any
 [DI attribute](https://symfony.com/doc/current/reference/attributes.html#dependency-injection) on
 your `__invoke()` parameters:
 
@@ -183,7 +179,7 @@ class SomeCommand extends InvokableServiceCommand
         SomeService $service,
 
         #[Autowire('%kernel.environment%')]
-        string $env,
+        string $environment,
 
         #[Target('githubApi')]
         HttpClientInterface $httpClient,
@@ -196,45 +192,42 @@ class SomeCommand extends InvokableServiceCommand
 }
 ```
 
-### `ConfigureWithAttributes`
+### Configure with Attributes
 
-Use this trait to use the `Argument` and `Option` attributes to configure your command's
-arguments and options:
+Your commands that extend [`InvokableCommand`](#invokablecommand) or [`InvokableServiceCommand`](#invokableservicecommand)
+can configure arguments and options with attributes:
 
 ```php
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Zenstruck\Console\Attribute\Argument;
 use Zenstruck\Console\Attribute\Option;
-use Zenstruck\Console\ConfigureWithAttributes;
+use Zenstruck\Console\InvokableCommand;
 
 #[Argument('arg1', description: 'Argument 1 description', mode: InputArgument::REQUIRED)]
 #[Argument('arg2', description: 'Argument 1 description')]
 #[Option('option1', description: 'Option 1 description')]
-class MyCommand extends Command
+class MyCommand extends InvokableCommand
 {
-    use ConfigureWithAttributes;
+    // ...
 }
 ```
 
 #### Invokable Attributes
 
-If using `ConfigureWithAttributes` and [`Invokable`](#invokable) together, you can add the
-`Option`/`Argument` attributes to your `__invoke()` parameters to define and inject arguments/options:
+Instead of defining at the class level, you can add the `Option`/`Argument` attributes directly to your
+`__invoke()` parameters to define _and_ inject arguments/options:
 
 ```php
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Zenstruck\Console\Attribute\Argument;
 use Zenstruck\Console\Attribute\Option;
-use Zenstruck\Console\ConfigureWithAttributes;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 
 #[AsCommand('my:command')]
-class MyCommand extends Command
+class MyCommand extends InvokableCommand
 {
-    use ConfigureWithAttributes, Invokable;
-
     public function __invoke(
         #[Argument]
         string $username, // defined as a required argument (username)
@@ -259,7 +252,7 @@ class MyCommand extends Command
 }
 ```
 
-> **Note**
+> ![NOTE]
 > Option/Argument _modes_ and _defaults_ are detected from the parameter's type-hint/default value
 > and cannot be defined on the attribute.
 
@@ -324,18 +317,18 @@ $output->fetch(); // string (the output)
 
 #### `RunsCommands`
 
-You can give your [Invokable Commands](#invokable) the ability to run other commands (defined
+You can give your [Invokable Commands](#invokablecommand) the ability to run other commands (defined
 in the application) by using the `RunsCommands` trait. These _sub-commands_ will use the same
 _output_ as the parent command.
 
 ```php
 use Symfony\Component\Console\Command;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\RunsCommands;
 
-class MyCommand extends Command
+class MyCommand extends InvokableCommand
 {
-    use Invokable, RunsCommands;
+    use RunsCommands;
 
     public function __invoke(): void
     {
@@ -356,7 +349,7 @@ class MyCommand extends Command
 
 ### `RunsProcesses`
 
-You can give your [Invokable Commands](#invokable) the ability to run other processes (`symfony/process` required)
+You can give your [Invokable Commands](#invokablecommand) the ability to run other processes (`symfony/process` required)
 by using the `RunsProcesses` trait. Standard output from the process is hidden by default but can be shown by
 passing `-v` to the _parent command_. Error output is always shown. If the process fails, a `\RuntimeException`
 is thrown.
@@ -364,12 +357,12 @@ is thrown.
 ```php
 use Symfony\Component\Console\Command;
 use Symfony\Component\Process\Process;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\RunsProcesses;
 
-class MyCommand extends Command
+class MyCommand extends InvokableCommand
 {
-    use Invokable, RunsProcesses;
+    use RunsProcesses;
 
     public function __invoke(): void
     {
@@ -403,5 +396,5 @@ services:
         autoconfigure: true
 ```
 
-> **Note**
+> ![NOTE]
 > This will display a summary after every registered command runs.
