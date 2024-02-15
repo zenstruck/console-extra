@@ -121,10 +121,6 @@ final class ConfigureWithAttributesTest extends TestCase
      */
     public function negatable_parameter_attribute_options(): void
     {
-        if (!\defined(InputOption::class.'::VALUE_NEGATABLE')) {
-            $this->markTestSkipped('Negatable arguments not available.');
-        }
-
         $command = TestCommand::for(
             new class() extends Command {
                 use ConfigureWithAttributes, Invokable;
