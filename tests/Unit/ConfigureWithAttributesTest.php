@@ -123,8 +123,6 @@ final class ConfigureWithAttributesTest extends TestCase
     {
         $command = TestCommand::for(
             new class('command') extends InvokableCommand {
-                use ConfigureWithAttributes;
-
                 public function __invoke(
                     #[Option] ?bool $foo,
                 ): void {
@@ -156,8 +154,6 @@ final class ConfigureWithAttributesTest extends TestCase
     {
         $command = TestCommand::for(
             new class('command') extends InvokableCommand {
-                use ConfigureWithAttributes;
-
                 public function __invoke(
                     #[Argument('custom-foo')] ?string $foo,
                     #[Option('custom-bar')] bool $bar,
@@ -190,8 +186,6 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectExceptionMessage(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', Argument::class));
 
         new class('command') extends InvokableCommand {
-            use ConfigureWithAttributes;
-
             public function __invoke(
                 #[Argument(mode: InputArgument::REQUIRED)] $foo,
             ): void {
@@ -208,8 +202,6 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectExceptionMessage(\sprintf('Cannot use $default when using %s as a parameter attribute, this is inferred from the parameter\'s default value.', Argument::class));
 
         new class('command') extends InvokableCommand {
-            use ConfigureWithAttributes;
-
             public function __invoke(
                 #[Argument(default: true)] $foo,
             ): void {
@@ -226,8 +218,6 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectExceptionMessage(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', Option::class));
 
         new class('command') extends InvokableCommand {
-            use ConfigureWithAttributes;
-
             public function __invoke(
                 #[Option(mode: InputArgument::REQUIRED)] $foo,
             ): void {
@@ -244,8 +234,6 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectExceptionMessage(\sprintf('Cannot use $default when using %s as a parameter attribute, this is inferred from the parameter\'s default value.', Option::class));
 
         new class('command') extends InvokableCommand {
-            use ConfigureWithAttributes;
-
             public function __invoke(
                 #[Option(default: true)] $foo,
             ): void {
@@ -262,8 +250,6 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectExceptionMessage(\sprintf('%s cannot be repeated when used as a parameter attribute.', Option::class));
 
         new class('command') extends InvokableCommand {
-            use ConfigureWithAttributes;
-
             public function __invoke(
                 #[Option]
                 #[Option]
@@ -282,8 +268,6 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectExceptionMessage(\sprintf('%s cannot be repeated when used as a parameter attribute.', Argument::class));
 
         new class('command') extends InvokableCommand {
-            use ConfigureWithAttributes;
-
             public function __invoke(
                 #[Argument]
                 #[Argument]
@@ -301,8 +285,6 @@ final class ConfigureWithAttributesTest extends TestCase
     {
         $command = TestCommand::for(
             new class('command') extends InvokableCommand {
-                use ConfigureWithAttributes;
-
                 public function __invoke(
                     #[Argument] string $fooBar,
                 ): void {
@@ -325,8 +307,6 @@ final class ConfigureWithAttributesTest extends TestCase
     {
         $command = TestCommand::for(
             new class('command') extends InvokableCommand {
-                use ConfigureWithAttributes;
-
                 public function __invoke(
                     #[Option] string $fooBar,
                 ): void {
@@ -338,6 +318,25 @@ final class ConfigureWithAttributesTest extends TestCase
         $command->execute('--fooBar=value')
             ->assertSuccessful()
             ->assertOutputContains('fooBar: value')
+        ;
+    }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function direct_user_to_remove_trait_if_not_required(): void
+    {
+        TestCommand::for(
+            new class('command') extends InvokableCommand {
+                use ConfigureWithAttributes;
+
+                public function __invoke()
+                {
+                }
+            })
+            ->execute()
+            ->assertSuccessful()
         ;
     }
 }
@@ -357,8 +356,6 @@ class WithClassAttributesCommand extends Command
 
 class WithParameterAttributesCommand extends InvokableCommand
 {
-    use ConfigureWithAttributes;
-
     public function __invoke(
         #[Argument(description: 'First argument is required')]
         string $arg1,

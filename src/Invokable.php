@@ -45,6 +45,10 @@ trait Invokable
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
+        if (InvokableCommand::class !== self::class && $this instanceof InvokableCommand) {
+            trigger_deprecation('zenstruck/console-extra', '1.4', 'You can safely remove "%s" from "%s".', __TRAIT__, $this::class);
+        }
+
         $this->io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
     }
 
@@ -124,7 +128,7 @@ trait Invokable
      *
      * @return array<\ReflectionParameter>
      */
-    final protected static function invokeParameters(): array
+    protected static function invokeParameters(): array
     {
         try {
             return (new \ReflectionClass(static::class))->getMethod('__invoke')->getParameters();
