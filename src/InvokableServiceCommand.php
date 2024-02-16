@@ -13,12 +13,10 @@ namespace Zenstruck\Console;
 
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\DependencyInjection\TypedReference;
 use Symfony\Contracts\Service\Attribute\Required;
 use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
@@ -26,27 +24,23 @@ use Zenstruck\Console\Attribute\Argument;
 use Zenstruck\Console\Attribute\Option;
 
 /**
- * All the benefits of {@see Invokable} but also allows for auto-injection of
+ * All the benefits of {@see InvokableCommand} but also allows for auto-injection of
  * any service from your Symfony DI container. You can think of it as
  * "Invokable Service Controllers" (with 'controller.service_arguments') but
  * for commands. Instead of a "Request", you inject {@see IO}.
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-abstract class InvokableServiceCommand extends Command implements ServiceSubscriberInterface
+abstract class InvokableServiceCommand extends InvokableCommand implements ServiceSubscriberInterface
 {
-    use Invokable { execute as private invokableExecute; }
-
     private ContainerInterface $container;
 
     public static function getSubscribedServices(): array
     {
-        $supportsAttributes = self::supportsAttributes();
-
         $services = \array_values(
             \array_filter(
                 \array_map(
-                    static function(\ReflectionParameter $parameter) use ($supportsAttributes) {
+                    static function(\ReflectionParameter $parameter) {
                         if (!$type = $parameter->getType()) {
                             return null;
                         }
@@ -69,15 +63,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
                             return null;
                         }
 
-                        if (!$supportsAttributes && $type->isBuiltin()) {
-                            return null;
-                        }
-
-                        if (!$supportsAttributes) {
-                            return $type->allowsNull() ? '?'.$name : $name;
-                        }
-
-                        if ($parameter->getAttributes(Option::class) || $parameter->getAttributes(Argument::class)) {
+                        if ($parameter->getAttributes(Option::class, \ReflectionAttribute::IS_INSTANCEOF) || $parameter->getAttributes(Argument::class, \ReflectionAttribute::IS_INSTANCEOF)) {
                             return null; // don't auto-inject options/arguments
                         }
 
@@ -117,7 +103,7 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
             $this->addArgumentFactory($serviceId, static fn() => $value);
         }
 
-        return $this->invokableExecute($input, $output);
+        return parent::execute($input, $output);
     }
 
     #[Required]
@@ -129,16 +115,6 @@ abstract class InvokableServiceCommand extends Command implements ServiceSubscri
     final protected function parameter(string $name): mixed
     {
         return $this->container()->get(ParameterBagInterface::class)->get($name);
-    }
-
-    private static function supportsAttributes(): bool
-    {
-        if (!$constructor = (new \ReflectionClass(TypedReference::class))->getConstructor()) {
-            return false;
-        }
-
-        // super hacky... but it's the only way currently to detect if symfony/di supports SubscribedService with attributes
-        return $constructor->getNumberOfParameters() > 4;
     }
 
     /**

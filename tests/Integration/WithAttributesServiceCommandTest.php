@@ -13,7 +13,6 @@ namespace Zenstruck\Console\Tests\Integration;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Console\Test\InteractsWithConsole;
-use Zenstruck\Console\Tests\Fixture\Kernel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -21,13 +20,6 @@ use Zenstruck\Console\Tests\Fixture\Kernel;
 final class WithAttributesServiceCommandTest extends KernelTestCase
 {
     use InteractsWithConsole;
-
-    protected function setUp(): void
-    {
-        if (Kernel::VERSION_ID < 60200) {
-            $this->markTestSkipped('Requires Symfony 6.2+');
-        }
-    }
 
     /**
      * @test

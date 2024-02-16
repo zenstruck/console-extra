@@ -39,10 +39,7 @@ final class Kernel extends BaseKernel
     {
         $c->register(ServiceCommand::class)->setAutowired(true)->setAutoconfigured(true);
         $c->register(ServiceSubscriberTraitCommand::class)->setAutowired(true)->setAutoconfigured(true);
-
-        if (self::VERSION_ID >= 60200) {
-            $c->register(WithAttributesServiceCommand::class)->setAutowired(true)->setAutoconfigured(true);
-        }
+        $c->register(WithAttributesServiceCommand::class)->setAutowired(true)->setAutoconfigured(true);
 
         $c->register('imp1', Implementation1::class);
         $c->register('imp2', Implementation2::class);

@@ -15,7 +15,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Zenstruck\Console\Attribute\Argument;
-use Zenstruck\Console\ConfigureWithAttributes;
 use Zenstruck\Console\InvokableServiceCommand;
 use Zenstruck\Console\IO;
 use Zenstruck\Console\Tests\Fixture\Service\AnInterface;
@@ -26,8 +25,6 @@ use Zenstruck\Console\Tests\Fixture\Service\AnInterface;
 #[AsCommand('with-attributes-service-command')]
 final class WithAttributesServiceCommand extends InvokableServiceCommand
 {
-    use ConfigureWithAttributes;
-
     public function __invoke(
         IO $io,
 

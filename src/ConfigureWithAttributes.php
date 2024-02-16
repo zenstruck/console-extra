@@ -21,30 +21,34 @@ trait ConfigureWithAttributes
 {
     protected function configure(): void
     {
-        $class = new \ReflectionClass($this);
-
-        foreach ($class->getAttributes(Argument::class) as $attribute) {
-            $this->addArgument(...$attribute->newInstance()->values());
+        if (InvokableCommand::class !== self::class && $this instanceof InvokableCommand) { // @phpstan-ignore-line
+            trigger_deprecation('zenstruck/console-extra', '1.4', 'You can safely remove "%s" from "%s".', __TRAIT__, $this::class);
         }
 
-        foreach ($class->getAttributes(Option::class) as $attribute) {
-            $this->addOption(...$attribute->newInstance()->values());
+        $class = new \ReflectionClass($this);
+
+        foreach ($class->getAttributes(Argument::class, \ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
+            $this->addArgument(...$attribute->newInstance()->values($this));
+        }
+
+        foreach ($class->getAttributes(Option::class, \ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
+            $this->addOption(...$attribute->newInstance()->values($this));
         }
 
         try {
             $parameters = (new \ReflectionClass(static::class))->getMethod('__invoke')->getParameters();
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             return; // not using Invokable
         }
 
         foreach ($parameters as $parameter) {
-            if ($args = Argument::parseParameter($parameter)) {
+            if ($args = Argument::parseParameter($parameter, $this)) {
                 $this->addArgument(...$args);
 
                 continue;
             }
 
-            if ($args = Option::parseParameter($parameter)) {
+            if ($args = Option::parseParameter($parameter, $this)) {
                 $this->addOption(...$args);
             }
         }

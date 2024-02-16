@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Zenstruck\Console\Tests\Fixture\Command;
+namespace Zenstruck\Console;
 
-use Zenstruck\Console\InvokableCommand as BaseInvokableCommand;
+use Symfony\Component\Console\Command\Command;
 
 /**
  * Makes your command "invokable" to reduce boilerplate.
  *
- *  Auto-injects the following objects into __invoke():
+ * Auto-injects the following objects into __invoke():
  *
  * @see IO
  * @see InputInterface the "real" input
@@ -24,10 +24,7 @@ use Zenstruck\Console\InvokableCommand as BaseInvokableCommand;
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-abstract class InvokableCommand extends BaseInvokableCommand
+abstract class InvokableCommand extends Command
 {
-    protected function configure(): void
-    {
-        $this->setName('invoke');
-    }
+    use ConfigureWithAttributes, Invokable;
 }

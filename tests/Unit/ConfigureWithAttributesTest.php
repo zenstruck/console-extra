@@ -13,13 +13,16 @@ namespace Zenstruck\Console\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Zenstruck\Console\Attribute\Argument;
 use Zenstruck\Console\Attribute\Option;
 use Zenstruck\Console\ConfigureWithAttributes;
-use Zenstruck\Console\Invokable;
+use Zenstruck\Console\InvokableCommand;
 use Zenstruck\Console\Test\TestCommand;
+use Zenstruck\Console\Tests\Fixture\Attribute\CustomArgument;
+use Zenstruck\Console\Tests\Fixture\Attribute\CustomOption;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -121,19 +124,8 @@ final class ConfigureWithAttributesTest extends TestCase
      */
     public function negatable_parameter_attribute_options(): void
     {
-        if (!\defined(InputOption::class.'::VALUE_NEGATABLE')) {
-            $this->markTestSkipped('Negatable arguments not available.');
-        }
-
         $command = TestCommand::for(
-            new class() extends Command {
-                use ConfigureWithAttributes, Invokable;
-
-                public static function getDefaultName(): ?string
-                {
-                    return 'command';
-                }
-
+            new class('command') extends InvokableCommand {
                 public function __invoke(
                     #[Option] ?bool $foo,
                 ): void {
@@ -164,14 +156,7 @@ final class ConfigureWithAttributesTest extends TestCase
     public function can_customize_argument_and_option_names_via_parameter_attribute(): void
     {
         $command = TestCommand::for(
-            new class() extends Command {
-                use ConfigureWithAttributes, Invokable;
-
-                public static function getDefaultName(): ?string
-                {
-                    return 'command';
-                }
-
+            new class('command') extends InvokableCommand {
                 public function __invoke(
                     #[Argument('custom-foo')] ?string $foo,
                     #[Option('custom-bar')] bool $bar,
@@ -203,14 +188,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', Argument::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
-
+        new class('command') extends InvokableCommand {
             public function __invoke(
                 #[Argument(mode: InputArgument::REQUIRED)] $foo,
             ): void {
@@ -226,14 +204,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $default when using %s as a parameter attribute, this is inferred from the parameter\'s default value.', Argument::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
-
+        new class('command') extends InvokableCommand {
             public function __invoke(
                 #[Argument(default: true)] $foo,
             ): void {
@@ -249,14 +220,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $mode when using %s as a parameter attribute, this is inferred from the parameter\'s type.', Option::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
-
+        new class('command') extends InvokableCommand {
             public function __invoke(
                 #[Option(mode: InputArgument::REQUIRED)] $foo,
             ): void {
@@ -272,14 +236,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Cannot use $default when using %s as a parameter attribute, this is inferred from the parameter\'s default value.', Option::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
-
+        new class('command') extends InvokableCommand {
             public function __invoke(
                 #[Option(default: true)] $foo,
             ): void {
@@ -295,14 +252,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('%s cannot be repeated when used as a parameter attribute.', Option::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
-
+        new class('command') extends InvokableCommand {
             public function __invoke(
                 #[Option]
                 #[Option]
@@ -320,14 +270,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('%s cannot be repeated when used as a parameter attribute.', Argument::class));
 
-        new class() extends Command {
-            use ConfigureWithAttributes, Invokable;
-
-            public static function getDefaultName(): ?string
-            {
-                return 'command';
-            }
-
+        new class('command') extends InvokableCommand {
             public function __invoke(
                 #[Argument]
                 #[Argument]
@@ -335,6 +278,150 @@ final class ConfigureWithAttributesTest extends TestCase
             ): void {
             }
         };
+    }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function kebab_case_argument_deprecation(): void
+    {
+        $command = TestCommand::for(
+            new class('command') extends InvokableCommand {
+                public function __invoke(
+                    #[Argument] string $fooBar,
+                ): void {
+                    $this->io()->comment('fooBar: '.$fooBar);
+                }
+            },
+        );
+
+        $command->execute('value')
+            ->assertSuccessful()
+            ->assertOutputContains('fooBar: value')
+        ;
+    }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function kebab_case_option_deprecation(): void
+    {
+        $command = TestCommand::for(
+            new class('command') extends InvokableCommand {
+                public function __invoke(
+                    #[Option] string $fooBar,
+                ): void {
+                    $this->io()->comment('fooBar: '.$fooBar);
+                }
+            },
+        );
+
+        $command->execute('--fooBar=value')
+            ->assertSuccessful()
+            ->assertOutputContains('fooBar: value')
+        ;
+    }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function direct_user_to_remove_trait_if_not_required(): void
+    {
+        TestCommand::for(
+            new class('command') extends InvokableCommand {
+                use ConfigureWithAttributes;
+
+                public function __invoke()
+                {
+                }
+            })
+            ->execute()
+            ->assertSuccessful()
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function can_use_custom_argument_and_option_attributes(): void
+    {
+        $command = new class('command') extends Command {
+            use ConfigureWithAttributes;
+
+            public function __invoke(
+                #[CustomArgument('arg description')] string $foo,
+                #[CustomOption('opt description')] bool $bar,
+            ) {
+            }
+        };
+
+        $this->assertSame('arg description', $command->getDefinition()->getArgument('foo')->getDescription());
+        $this->assertSame('opt description', $command->getDefinition()->getOption('bar')->getDescription());
+    }
+
+    /**
+     * @test
+     */
+    public function configure_argument_suggestions(): void
+    {
+        $command = TestCommand::for(
+            new class('command') extends Command {
+                use ConfigureWithAttributes;
+
+                public function __invoke(
+                    #[Argument(suggestions: ['foo', 'bar'])]
+                    string $arg1,
+
+                    #[Argument(suggestions: 'arg2Suggestions')]
+                    string $arg2,
+                ): void {
+                }
+
+                private function arg2Suggestions(CompletionInput $input): array
+                {
+                    return ['baz', 'qux'];
+                }
+            },
+        );
+
+        $command
+            ->complete('')->is(['foo', 'bar'])->back()
+            ->complete('first ')->is(['baz', 'qux'])->back()
+        ;
+    }
+
+    /**
+     * @test
+     */
+    public function configure_option_suggestions(): void
+    {
+        $command = TestCommand::for(
+            new class('command') extends Command {
+                use ConfigureWithAttributes;
+
+                public function __invoke(
+                    #[Option(suggestions: ['foo', 'bar'])]
+                    string $first,
+
+                    #[Option(suggestions: 'secondSuggestions')]
+                    string $second,
+                ): void {
+                }
+
+                private function secondSuggestions(CompletionInput $input): array
+                {
+                    return ['baz', 'qux'];
+                }
+            },
+        );
+
+        $command
+            ->complete('--first=')->is(['foo', 'bar'])->back()
+            ->complete('--second=')->is(['baz', 'qux'])->back()
+        ;
     }
 }
 
@@ -351,10 +438,8 @@ class WithClassAttributesCommand extends Command
     use ConfigureWithAttributes;
 }
 
-class WithParameterAttributesCommand extends Command
+class WithParameterAttributesCommand extends InvokableCommand
 {
-    use ConfigureWithAttributes, Invokable;
-
     public function __invoke(
         #[Argument(description: 'First argument is required')]
         string $arg1,

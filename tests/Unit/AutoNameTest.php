@@ -16,7 +16,6 @@ use Symfony\Component\Console\Command\Command;
 use Zenstruck\Console\AutoName;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameCommand;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameNoPrefixCommand;
-use Zenstruck\Console\Tests\Fixture\Kernel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -41,25 +40,6 @@ final class AutoNameTest extends TestCase
     {
         $this->assertSame('auto-name-no-prefix', AutoNameNoPrefixCommand::getDefaultName());
         $this->assertSame('auto-name-no-prefix', (new AutoNameNoPrefixCommand())->getName());
-    }
-
-    /**
-     * @test
-     */
-    public function can_use_traditional_naming_method(): void
-    {
-        if (Kernel::MAJOR_VERSION > 6) {
-            $this->markTestSkipped();
-        }
-
-        $command = new class() extends Command {
-            use AutoName;
-
-            protected static $defaultName = 'override';
-        };
-
-        $this->assertSame('override', $command::getDefaultName());
-        $this->assertSame('override', $command->getName());
     }
 
     /**

@@ -19,6 +19,8 @@ use function Symfony\Component\String\u;
  * @example GenerateUserReportCommand => app:generate-user-report
  *
  * @author Kevin Bond <kevinbond@gmail.com>
+ *
+ * @deprecated
  */
 trait AutoName
 {

@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use Zenstruck\Console\Configuration\DocblockConfiguration;
 use Zenstruck\Console\Tests\Fixture\Command\AutoNameDocblockCommand;
 use Zenstruck\Console\Tests\Fixture\Command\DocblockCommand;
-use Zenstruck\Console\Tests\Fixture\Kernel;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
@@ -152,54 +151,6 @@ final class ConfigureWithDocblocksTest extends TestCase
         $this->assertSame('Fifth option is an array with a shortcut (-o)', $option->getDescription());
         $this->assertSame('o', $option->getShortcut());
         $this->assertTrue($option->isValueRequired());
-    }
-
-    /**
-     * @test
-     */
-    public function can_override_docblock_configuration_with_traditional_configuration(): void
-    {
-        if (Kernel::MAJOR_VERSION > 6) {
-            $this->markTestSkipped();
-        }
-
-        /**
-         * Not used description.
-         *
-         * Not used help.
-         *
-         * @command not:used:name
-         *
-         * @argument arg not used
-         * @option option not used
-         */
-        $command = new class() extends DocblockCommand {
-            protected static $defaultName = 'traditional:name';
-            protected static $defaultDescription = 'Traditional description';
-
-            protected function configure(): void
-            {
-                $this
-                    ->setDescription(self::$defaultDescription)
-                    ->setHelp('Traditional help')
-                    ->addArgument('t1')
-                    ->addOption('t2')
-                ;
-            }
-        };
-
-        if (DocblockConfiguration::supportsLazy()) {
-            // Symfony <5.3 does not have this feature
-            $this->assertSame('Traditional description', $command::getDefaultDescription());
-        }
-
-        $this->assertSame('traditional:name', $command::getDefaultName());
-        $this->assertSame('Traditional description', $command->getDescription());
-        $this->assertSame('Traditional help', $command->getHelp());
-        $this->assertTrue($command->getDefinition()->hasArgument('t1'));
-        $this->assertTrue($command->getDefinition()->hasOption('t2'));
-        $this->assertFalse($command->getDefinition()->hasArgument('arg'));
-        $this->assertFalse($command->getDefinition()->hasOption('option'));
     }
 
     /**

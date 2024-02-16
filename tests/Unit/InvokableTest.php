@@ -263,4 +263,23 @@ final class InvokableTest extends TestCase
 
         $command->something();
     }
+
+    /**
+     * @test
+     * @group legacy
+     */
+    public function direct_user_to_remove_trait_if_not_required(): void
+    {
+        TestCommand::for(
+            new class() extends InvokableCommand {
+                use Invokable;
+
+                public function __invoke()
+                {
+                }
+            })
+            ->execute()
+            ->assertSuccessful()
+        ;
+    }
 }

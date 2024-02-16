@@ -11,16 +11,22 @@
 
 namespace Zenstruck\Console\Attribute;
 
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputOption;
+
+use function Symfony\Component\String\s;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_PARAMETER | \Attribute::IS_REPEATABLE)]
-final class Option
+class Option
 {
     /**
      * @see InputOption::__construct()
+     *
+     * @param string[]|string $suggestions
      */
     public function __construct(
         public ?string $name = null,
@@ -28,6 +34,7 @@ final class Option
         private ?int $mode = null,
         private string $description = '',
         private string|bool|int|float|array|null $default = null,
+        private array|string $suggestions = [],
     ) {
     }
 
@@ -36,9 +43,9 @@ final class Option
      *
      * @return mixed[]|null
      */
-    public static function parseParameter(\ReflectionParameter $parameter): ?array
+    final public static function parseParameter(\ReflectionParameter $parameter, Command $command): ?array
     {
-        if (!$attributes = $parameter->getAttributes(self::class)) {
+        if (!$attributes = $parameter->getAttributes(self::class, \ReflectionAttribute::IS_INSTANCEOF)) {
             return null;
         }
 
@@ -48,6 +55,11 @@ final class Option
 
         /** @var self $value */
         $value = $attributes[0]->newInstance();
+
+        if (!$value->name && $parameter->name !== s($parameter->name)->snake()->replace('_', '-')->toString()) {
+            trigger_deprecation('zenstruck/console-extra', '1.4', 'Argument names will default to kebab-case in 2.0. Specify the name in #[Option] explicitly to remove this deprecation.');
+        }
+
         $value->name ??= $parameter->name;
 
         if ($value->mode) {
@@ -62,7 +74,7 @@ final class Option
 
         $value->mode = match ($name) {
             'array' => InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
-            'bool' => \defined(InputOption::class.'::VALUE_NEGATABLE') && $parameter->allowsNull() ? InputOption::VALUE_NEGATABLE : InputOption::VALUE_NONE,
+            'bool' => $parameter->allowsNull() ? InputOption::VALUE_NEGATABLE : InputOption::VALUE_NONE,
             default => InputOption::VALUE_REQUIRED,
         };
 
@@ -70,7 +82,7 @@ final class Option
             $value->default = $parameter->getDefaultValue();
         }
 
-        return $value->values();
+        return $value->values($command);
     }
 
     /**
@@ -78,12 +90,22 @@ final class Option
      *
      * @return mixed[]
      */
-    public function values(): array
+    final public function values(Command $command): array
     {
         if (!$this->name) {
             throw new \LogicException(\sprintf('A $name is required when using %s as a command class attribute.', self::class));
         }
 
-        return [$this->name, $this->shortcut, $this->mode, $this->description, $this->default];
+        $suggestions = $this->suggestions;
+
+        if (\is_string($suggestions)) {
+            $suggestions = \Closure::bind(
+                fn(CompletionInput $i) => $this->{$suggestions}($i),
+                $command,
+                $command,
+            );
+        }
+
+        return [$this->name, $this->shortcut, $this->mode, $this->description, $this->default, $suggestions];
     }
 }

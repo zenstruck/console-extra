@@ -20,14 +20,6 @@ use Zenstruck\Console\Attribute\Argument as ConsoleArgument;
 use Zenstruck\Console\Attribute\Option;
 
 /**
- * Makes your command "invokable" to reduce boilerplate.
- *
- * Auto-injects the following objects into __invoke():
- *
- * @see IO
- * @see InputInterface the "real" input
- * @see OutputInterface the "real" output
- *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 trait Invokable
@@ -53,6 +45,10 @@ trait Invokable
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
+        if (InvokableCommand::class !== self::class && $this instanceof InvokableCommand) { // @phpstan-ignore-line
+            trigger_deprecation('zenstruck/console-extra', '1.4', 'You can safely remove "%s" from "%s".', __TRAIT__, $this::class);
+        }
+
         $this->io = ($this->argumentFactories[IO::class] ?? static fn() => new IO($input, $output))($input, $output);
     }
 
@@ -81,7 +77,7 @@ trait Invokable
                 if (!$type || $type->isBuiltin()) {
                     $name = $parameter->name;
 
-                    if ($attr = $parameter->getAttributes(ConsoleArgument::class)[0] ?? $parameter->getAttributes(Option::class)[0] ?? null) {
+                    if ($attr = $parameter->getAttributes(ConsoleArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? $parameter->getAttributes(Option::class)[0] ?? null) {
                         $name = $attr->newInstance()->name ?? $name;
                     }
 
@@ -132,11 +128,11 @@ trait Invokable
      *
      * @return array<\ReflectionParameter>
      */
-    private static function invokeParameters(): array
+    protected static function invokeParameters(): array
     {
         try {
             return (new \ReflectionClass(static::class))->getMethod('__invoke')->getParameters();
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             throw new \LogicException(\sprintf('"%s" must implement __invoke() to use %s.', static::class, Invokable::class));
         }
     }

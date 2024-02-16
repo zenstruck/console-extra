@@ -27,6 +27,8 @@ use function Symfony\Component\String\u;
  * @author Kevin Bond <kevinbond@gmail.com>
  *
  * @template T of Command
+ *
+ * @deprecated
  */
 final class DocblockConfiguration
 {
