@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [v1.4.0](https://github.com/zenstruck/console-extra/releases/tag/v1.4.0)
+
+February 19th, 2024 - [v1.3.3...v1.4.0](https://github.com/zenstruck/console-extra/compare/v1.3.3...v1.4.0)
+
+* 40fe882 feat: configure auto-completion suggestions with attributes (#62) by @kbond
+* 58dce00 feat: allow extending `Option`/`Argument` attributes (#62) by @kbond
+* 48a75df doc: update docs (#62) by @kbond
+* 03bd8c6 minor: trigger deprecation note when using traits when not required (#62) by @kbond
+* b2c5711 feat: add `InvokableCommand` base class (#62) by @kbond
+* 7d88fea minor: deprecate defaulting arguments/options to camelCase (#62) by @kbond
+* e37f3c7 minor: remove symfony/string from require (#62) by @kbond
+* 55486e7 feat: require PHP 8.1+ and Symfony 6.4+ (#62) by @kbond
+* e5308d7 minor: add `@deprecation` annotations (#62) by @kbond
+* b4ddcd6 minor: reset before tests (#62) by @kbond
+
 ## [v1.3.3](https://github.com/zenstruck/console-extra/releases/tag/v1.3.3)
 
 February 14th, 2024 - [v1.3.2...v1.3.3](https://github.com/zenstruck/console-extra/compare/v1.3.2...v1.3.3)
