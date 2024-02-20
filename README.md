@@ -14,7 +14,7 @@ final class CreateUserCommand extends InvokableServiceCommand
     public function __invoke(
         IO $io,
 
-        UserRepository $repo,
+        UserManager $userManager,
 
         #[Argument]
         string $email,
@@ -25,7 +25,7 @@ final class CreateUserCommand extends InvokableServiceCommand
         #[Option(name: 'role', shortcut: 'r')]
         array $roles,
     ): void {
-        $repo->createUser($email, $password, $roles);
+        $userManager->createUser($email, $password, $roles);
 
         $this->runCommand('another:command');
         $this->runProcess('/some/script');
@@ -53,7 +53,7 @@ composer require zenstruck/console-extra
 
 This library is a set of modular features that can be used separately or in combination.
 
-> ![NOTE]
+> [!NOTE]
 > To reduce command boilerplate even further, it is recommended to create an abstract base command for your
 > app that enables all the features you desire. Then have all your app's commands extend this.
 
@@ -143,14 +143,14 @@ auto-injecting services into `__invoke()`. This allows your commands to behave l
 Have your commands extend `InvokableServiceCommand` and ensure they are auto-wired/configured.
 
 ```php
-use App\Repository\UserRepository;
+use App\Service\UserManager;
 use Psr\Log\LoggerInterface;
 use Zenstruck\Console\InvokableServiceCommand;
 use Zenstruck\Console\IO;
 
 class CreateUserCommand extends InvokableServiceCommand
 {
-    public function __invoke(IO $io, UserRepository $repo, LoggerInterface $logger): void
+    public function __invoke(IO $io, UserManager $userManager, LoggerInterface $logger): void
     {
         // access container parameters
         $environment = $this->parameter('kernel.environment');
@@ -249,7 +249,7 @@ class MyCommand extends InvokableCommand
         #[Argument]
         string $password = 'p4ssw0rd', //  defined as an optional argument (password) with a default (p4ssw0rd)
 
-        #[Option(name: 'role', shortcut: 'r')]
+        #[Option(name: 'role', shortcut: 'r', suggestions: ['ROLE_EDITOR', 'ROLE_REVIEWER'])]
         array $roles = [], // defined as an array option that requires values (--r|role[])
 
         #[Option(name: 'super-admin')]
@@ -266,7 +266,7 @@ class MyCommand extends InvokableCommand
 }
 ```
 
-> ![NOTE]
+> [!NOTE]
 > Option/Argument _modes_ and _defaults_ are detected from the parameter's type-hint/default value
 > and cannot be defined on the attribute.
 
@@ -410,5 +410,5 @@ services:
         autoconfigure: true
 ```
 
-> ![NOTE]
+> [!NOTE]
 > This will display a summary after every registered command runs.
