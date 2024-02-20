@@ -22,7 +22,7 @@ final class CreateUserCommand extends InvokableServiceCommand
         #[Argument]
         string $password,
 
-        #[Option(name: 'role', shortcut: 'r', suggestions: UserMananger:ROLES)]
+        #[Option(name: 'role', shortcut: 'r', suggestions: UserMananger::ROLES)]
         array $roles,
     ): void {
         $userManager->createUser($email, $password, $roles);
