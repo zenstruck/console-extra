@@ -39,7 +39,7 @@ final class InvokableTest extends TestCase
     public function invoke_auto_injects_proper_objects(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(
                     IO $io,
                     InputInterface $input,
@@ -99,7 +99,7 @@ final class InvokableTest extends TestCase
     public function invoke_can_return_integer(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(): int
                 {
                     return 1;
@@ -119,7 +119,7 @@ final class InvokableTest extends TestCase
         $this->expectExceptionMessage('::__invoke()" must return void|null|int. Got "string".');
 
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(): string
                 {
                     return 'invalid';
@@ -137,7 +137,7 @@ final class InvokableTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('must implement __invoke() to use %s.', Invokable::class));
 
-        TestCommand::for(new class() extends InvokableCommand {})->execute();
+        TestCommand::for(new class extends InvokableCommand {})->execute();
     }
 
     /**
@@ -148,7 +148,7 @@ final class InvokableTest extends TestCase
         $this->expectException(UnresolveableArgument::class);
 
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(Table $table)
                 {
                 }
@@ -163,7 +163,7 @@ final class InvokableTest extends TestCase
     public function can_inject_custom_io(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(CustomIO $io)
                 {
                     $io->success('Success!');
@@ -181,7 +181,7 @@ final class InvokableTest extends TestCase
      */
     public function can_set_custom_io_as_argument_factory(): void
     {
-        $command = (new class() extends InvokableCommand {
+        $command = (new class extends InvokableCommand {
             public function __invoke(IO $io, CustomIO $custom, InputInterface $input, OutputInterface $output, StyleInterface $style, $none, ?string $optional = null)
             {
                 $io->comment(\sprintf('IO: %s', $io::class));
@@ -216,7 +216,7 @@ final class InvokableTest extends TestCase
     public function can_inject_io_base_classes(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(OutputStyle $output, SymfonyStyle $style)
                 {
                     $output->text(\sprintf('OutputStyle: %s', \get_debug_type($output)));
@@ -238,7 +238,7 @@ final class InvokableTest extends TestCase
         $this->expectException(UnresolveableArgument::class);
 
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(StreamOutput $output)
                 {
                 }
@@ -252,7 +252,7 @@ final class InvokableTest extends TestCase
      */
     public function cannot_call_io_before_invoking_command(): void
     {
-        $command = new class() extends InvokableCommand {
+        $command = new class extends InvokableCommand {
             public function something(): void
             {
                 $this->io();
@@ -271,7 +271,7 @@ final class InvokableTest extends TestCase
     public function direct_user_to_remove_trait_if_not_required(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 use Invokable;
 
                 public function __invoke()

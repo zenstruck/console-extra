@@ -50,7 +50,7 @@ final class AutoNameTest extends TestCase
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('Using "%s" with an anonymous class is not supported.', AutoName::class));
 
-        new class() extends Command {
+        new class extends Command {
             use AutoName;
         };
     }

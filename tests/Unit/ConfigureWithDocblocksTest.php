@@ -37,7 +37,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          *
          * @command some:command
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         $this->assertSame('some:command', $command::getDefaultName());
         $this->assertSame('some:command', $command->getName());
@@ -53,7 +53,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command some:command
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         if (DocblockConfiguration::supportsLazy()) {
             // Symfony <5.3 does not have this feature
@@ -84,7 +84,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @option option4="default with space" Forth option with "default" value (with spaces)
          * @option o|option5[] Fifth option is an array with a shortcut (-o)
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
         $definition = $command->getDefinition();
 
         $arg = $definition->getArgument('arg1');
@@ -167,7 +167,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          *
          * @argument foo==bar
          */
-        new class() extends DocblockCommand {};
+        new class extends DocblockCommand {};
     }
 
     /**
@@ -184,7 +184,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          *
          * @option foo==bar
          */
-        new class() extends DocblockCommand {};
+        new class extends DocblockCommand {};
     }
 
     /**
@@ -199,7 +199,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @command first
          * @command second
          */
-        new class() extends DocblockCommand {};
+        new class extends DocblockCommand {};
     }
 
     /**
@@ -210,7 +210,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command some:command arg1 ?arg2 arg3=default arg4="default with space" ?arg5[] --option1 --option2= --option3=default --option4="default with space" --o|option5[]
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
         $definition = $command->getDefinition();
 
         $arg = $definition->getArgument('arg1');
@@ -290,7 +290,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command
          */
-        new class() extends DocblockCommand {};
+        new class extends DocblockCommand {};
     }
 
     /**
@@ -304,7 +304,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command my:command foo==bar
          */
-        new class() extends DocblockCommand {};
+        new class extends DocblockCommand {};
     }
 
     /**
@@ -318,7 +318,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command my:command --foo==bar
          */
-        new class() extends DocblockCommand {};
+        new class extends DocblockCommand {};
     }
 
     /**
@@ -329,7 +329,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command some:command
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         $this->assertFalse($command->isHidden());
 
@@ -337,7 +337,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @command my:command
          * @hidden
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         $this->assertTrue($command->isHidden());
         $this->assertSame('my:command', $command->getName());
@@ -352,7 +352,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @command my:command
          * @hidden
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         if (DocblockConfiguration::supportsLazy()) {
             // Symfony 5.3+ supports setting hidden lazily
@@ -372,7 +372,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @alias alias1
          * @alias alias2
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         $this->assertSame('aliased:command', $command->getName());
         $this->assertSame(['alias1', 'alias2'], $command->getAliases());
@@ -388,7 +388,7 @@ final class ConfigureWithDocblocksTest extends TestCase
          * @alias alias1
          * @alias alias2
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         if (DocblockConfiguration::supportsLazy()) {
             // Symfony 5.3+ supports lazy aliases
@@ -406,7 +406,7 @@ final class ConfigureWithDocblocksTest extends TestCase
         /**
          * @command |kitchen:sink|alias1|alias2 arg --option
          */
-        $command = new class() extends DocblockCommand {};
+        $command = new class extends DocblockCommand {};
 
         if (DocblockConfiguration::supportsLazy()) {
             // Symfony 5.3+ supports lazy

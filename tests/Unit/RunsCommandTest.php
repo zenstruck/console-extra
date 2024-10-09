@@ -60,7 +60,7 @@ final class RunsCommandTest extends TestCase
      */
     public function must_be_used_on_command(): void
     {
-        $command = new class() {
+        $command = new class {
             use RunsCommands;
 
             public function something(): void
@@ -79,7 +79,7 @@ final class RunsCommandTest extends TestCase
      */
     public function must_be_used_on_invokable_command(): void
     {
-        $command = new class() extends Command {
+        $command = new class extends Command {
             use RunsCommands;
 
             public function something(): void

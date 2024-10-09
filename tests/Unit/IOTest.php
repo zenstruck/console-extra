@@ -96,7 +96,7 @@ final class IOTest extends TestCase
     public function can_progress_iterate(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(IO $io)
                 {
                     foreach ($io->progressIterate(\range(1, 10)) as $step) {
@@ -122,7 +122,7 @@ final class IOTest extends TestCase
     public function create_table(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(IO $io)
                 {
                     $io->createTable()
@@ -143,7 +143,7 @@ final class IOTest extends TestCase
     public function create_appendable_table(): void
     {
         TestCommand::for(
-            new class() extends InvokableCommand {
+            new class extends InvokableCommand {
                 public function __invoke(IO $io)
                 {
                     $table = $io->createTable()

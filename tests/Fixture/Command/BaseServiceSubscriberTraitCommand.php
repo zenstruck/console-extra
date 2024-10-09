@@ -13,7 +13,6 @@ namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Zenstruck\Console\InvokableServiceCommand;
 use Zenstruck\Console\IO;
 
