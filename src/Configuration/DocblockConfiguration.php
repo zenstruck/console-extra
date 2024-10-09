@@ -298,6 +298,6 @@ final class DocblockConfiguration
 
     private static function factory(): DocBlockFactory
     {
-        return self::$factory ??= DocBlockFactory::createInstance();
+        return self::$factory ??= DocBlockFactory::createInstance(); // @phpstan-ignore-line
     }
 }
