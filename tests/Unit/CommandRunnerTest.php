@@ -38,7 +38,7 @@ final class CommandRunnerTest extends TestCase
     public function can_find_from_application(): void
     {
         $application = new Application();
-        $application->add(new DummyCommand());
+        $application->{\method_exists($application, 'addCommand') ? 'addCommand' : 'add'}(new DummyCommand());
 
         $this->assertSame(0, CommandRunner::from($application, DummyCommand::class)->run());
         $this->assertSame(0, CommandRunner::from($application, 'dummy')->run());
