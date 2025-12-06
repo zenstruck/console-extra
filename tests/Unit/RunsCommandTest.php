@@ -32,8 +32,8 @@ final class RunsCommandTest extends TestCase
     public function can_run_commands(): void
     {
         $application = new Application();
-        $application->add(new DummyCommand());
-        $application->add(new RunsCommandCommand());
+        $application->{\method_exists($application, 'addCommand') ? 'addCommand' : 'add'}(new DummyCommand());
+        $application->{\method_exists($application, 'addCommand') ? 'addCommand' : 'add'}(new RunsCommandCommand());
 
         TestCommand::from($application, RunsCommandCommand::class)->execute()
             ->assertSuccessful()
