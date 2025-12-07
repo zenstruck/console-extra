@@ -26,7 +26,7 @@ class Argument
      *
      * @param string[]|string $suggestions
      */
-    public function __construct( // @phpstan-ignore missingType.iterableValue
+    public function __construct(// @phpstan-ignore missingType.iterableValue
         public ?string $name = null,
         private ?int $mode = null,
         private string $description = '',
