@@ -18,7 +18,6 @@
         "zenstruck/callback": "^1.4.2"
     },
     "require-dev": {
-        "phpdocumentor/reflection-docblock": "^5.2",
         "phpstan/phpstan": "^1.4",
         "phpunit/phpunit": "^9.5",
         "symfony/framework-bundle": "^6.4|^7.0",
