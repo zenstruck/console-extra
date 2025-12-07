@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [v2.0.0](https://github.com/zenstruck/console-extra/releases/tag/v2.0.0)
+
+December 7th, 2025 - [v1.4.1...v2.0.0](https://github.com/zenstruck/console-extra/compare/v1.4.1...v2.0.0)
+
+* 57e4fce minor: upgrade to PHPStan 2 by @kbond
+* 6191937 feat: support Symfony 8 by @kbond
+* d4eefec feat!: remove deprecated features by @kbond
+* d7379ca minor: fix deprecations in tests by @kbond
+
 ## [v1.4.1](https://github.com/zenstruck/console-extra/releases/tag/v1.4.1)
 
 December 7th, 2025 - [v1.4.0...v1.4.1](https://github.com/zenstruck/console-extra/compare/v1.4.0...v1.4.1)
