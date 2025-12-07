@@ -282,9 +282,8 @@ final class ConfigureWithAttributesTest extends TestCase
 
     /**
      * @test
-     * @group legacy
      */
-    public function kebab_case_argument_deprecation(): void
+    public function camel_case_argument(): void
     {
         $command = TestCommand::for(
             new class('command') extends InvokableCommand {
@@ -292,6 +291,7 @@ final class ConfigureWithAttributesTest extends TestCase
                     #[Argument] string $fooBar,
                 ): void {
                     $this->io()->comment('fooBar: '.$fooBar);
+                    $this->io()->comment('fooBar io: '.$this->io()->argument('fooBar'));
                 }
             },
         );
@@ -299,14 +299,14 @@ final class ConfigureWithAttributesTest extends TestCase
         $command->execute('value')
             ->assertSuccessful()
             ->assertOutputContains('fooBar: value')
+            ->assertOutputContains('fooBar io: value')
         ;
     }
 
     /**
      * @test
-     * @group legacy
      */
-    public function kebab_case_option_deprecation(): void
+    public function camel_case_options(): void
     {
         $command = TestCommand::for(
             new class('command') extends InvokableCommand {
@@ -314,6 +314,7 @@ final class ConfigureWithAttributesTest extends TestCase
                     #[Option] string $fooBar,
                 ): void {
                     $this->io()->comment('fooBar: '.$fooBar);
+                    $this->io()->comment('fooBar io: '.$this->io()->option('fooBar'));
                 }
             },
         );
@@ -321,6 +322,7 @@ final class ConfigureWithAttributesTest extends TestCase
         $command->execute('--fooBar=value')
             ->assertSuccessful()
             ->assertOutputContains('fooBar: value')
+            ->assertOutputContains('fooBar io: value')
         ;
     }
 
