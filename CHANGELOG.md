@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [v1.4.1](https://github.com/zenstruck/console-extra/releases/tag/v1.4.1)
+
+December 7th, 2025 - [v1.4.0...v1.4.1](https://github.com/zenstruck/console-extra/compare/v1.4.0...v1.4.1)
+
+* b60bcf5 minor: adjust CI config (#70) by @kbond
+* 86e9b59 minor: add BC layer for `ServiceSubscriberTrait` (#70) by @kbond
+* 628aa4d minor: fix sca (#70) by @kbond
+* d7b8de2 doc: fix typo (#66) by @tacman
+* 1808504 doc: add UserManager ROLES as a suggestion (#65) by @tacman
+* e99d5f6 doc: update badge by @kbond
+* a51daa0 doc: updates by @kbond
+
 ## [v1.4.0](https://github.com/zenstruck/console-extra/releases/tag/v1.4.0)
 
 February 19th, 2024 - [v1.3.3...v1.4.0](https://github.com/zenstruck/console-extra/compare/v1.3.3...v1.4.0)
