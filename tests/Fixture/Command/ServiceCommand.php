@@ -12,6 +12,7 @@
 namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,6 +25,7 @@ use Zenstruck\Console\IO;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
+#[AsCommand('service-command')]
 final class ServiceCommand extends InvokableServiceCommand
 {
     public function __invoke(
@@ -57,11 +59,6 @@ final class ServiceCommand extends InvokableServiceCommand
         $io->comment(\sprintf('env: %s', \var_export($env, true)));
 
         $io->success('done!');
-    }
-
-    public static function getDefaultName(): string
-    {
-        return 'service-command';
     }
 
     protected function configure(): void

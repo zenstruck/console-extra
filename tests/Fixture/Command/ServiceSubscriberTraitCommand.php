@@ -12,30 +12,28 @@
 namespace Zenstruck\Console\Tests\Fixture\Command;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Service\Attribute\SubscribedService;
 use Symfony\Contracts\Service\ServiceMethodsSubscriberTrait;
-use Symfony\Contracts\Service\ServiceSubscriberTrait;
+use Zenstruck\Console\InvokableServiceCommand;
+use Zenstruck\Console\IO;
 
-if (\trait_exists(ServiceMethodsSubscriberTrait::class)) {
-    final class ServiceSubscriberTraitCommand extends BaseServiceSubscriberTraitCommand
+#[AsCommand('service-subscriber-trait-command')]
+final class ServiceSubscriberTraitCommand extends InvokableServiceCommand
+{
+    use ServiceMethodsSubscriberTrait;
+
+    public function __invoke(IO $io, RouterInterface $router): void
     {
-        use ServiceMethodsSubscriberTrait;
-
-        #[SubscribedService]
-        protected function logger(): LoggerInterface
-        {
-            return $this->container->get(__METHOD__);
-        }
+        $io->comment(\sprintf('IO: %s', \get_debug_type($io)));
+        $io->comment(\sprintf('RouterInterface: %s', \get_debug_type($router)));
+        $io->comment(\sprintf('LoggerInterface: %s', \get_debug_type($this->logger())));
     }
-} else {
-    final class ServiceSubscriberTraitCommand extends BaseServiceSubscriberTraitCommand
-    {
-        use ServiceSubscriberTrait;
 
-        #[SubscribedService]
-        protected function logger(): LoggerInterface
-        {
-            return $this->container->get(__METHOD__);
-        }
+    #[SubscribedService]
+    protected function logger(): LoggerInterface
+    {
+        return $this->container->get(__METHOD__);
     }
 }
