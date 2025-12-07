@@ -26,7 +26,7 @@ class Option
      *
      * @param string[]|string $suggestions
      */
-    public function __construct(
+    public function __construct( // @phpstan-ignore missingType.iterableValue, missingType.iterableValue
         public ?string $name = null,
         private string|array|null $shortcut = null,
         private ?int $mode = null,

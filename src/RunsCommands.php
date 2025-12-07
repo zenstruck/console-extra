@@ -22,6 +22,7 @@ trait RunsCommands
      * @param string|class-string|array<string,mixed> $cli my:command arg --opt
      *                                                     MyCommand::class
      *                                                     ['command' => 'my:command', 'arg' => 'value']
+     * @param string[]                                $inputs
      */
     protected function runCommand($cli, array $inputs = []): int
     {
