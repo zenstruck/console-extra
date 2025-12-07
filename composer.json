@@ -18,7 +18,7 @@
         "zenstruck/callback": "^1.4.2"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.4",
+        "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^9.5",
         "symfony/framework-bundle": "^6.4|^7.0|^8.0",
         "symfony/phpunit-bridge": "^6.2|^7.0|^8.0",

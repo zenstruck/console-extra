@@ -11,12 +11,8 @@
 
 namespace Zenstruck\Console;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -38,51 +34,7 @@ class IO extends SymfonyStyle implements InputInterface
 
     public function __toString(): string
     {
-        if (!\method_exists($this->input, '__toString')) {
-            // InputInterface extends \Stringable in 6.1+
-            return 'Unsupported...';
-        }
-
         return $this->input->__toString();
-    }
-
-    /**
-     * Helper for {@see ProgressBar::iterate()}.
-     *
-     * @param mixed[] $iterable
-     *
-     * @return mixed[]
-     */
-    public function progressIterate(iterable $iterable, ?int $max = null): iterable
-    {
-        if (\method_exists(parent::class, 'progressIterate')) {
-            // SymfonyStyle 5.4+ includes this method
-            yield from parent::progressIterate($iterable, $max);
-
-            return;
-        }
-
-        yield from $this->createProgressBar()->iterate($iterable, $max);
-
-        $this->newLine(2);
-    }
-
-    /**
-     * Create a styled table. Uses {@see ConsoleSectionOutput} if available.
-     */
-    public function createTable(): Table
-    {
-        if (\method_exists(parent::class, 'createTable')) {
-            // SymfonyStyle 5.4+ includes this method
-            return parent::createTable();
-        }
-
-        $style = clone Table::getStyleDefinition('symfony-style-guide');
-        $style->setCellHeaderFormat('<info>%s</info>');
-
-        return (new Table($this->output instanceof ConsoleOutputInterface ? $this->output->section() : $this->output))
-            ->setStyle($style)
-        ;
     }
 
     public function input(): InputInterface
