@@ -95,7 +95,7 @@ trait Invokable
                     Parameter::typed(InputInterface::class, $input, Argument::EXACT),
                     Parameter::typed(OutputInterface::class, $output, Argument::EXACT),
                     Parameter::typed(IO::class, $this->io(), Argument::COVARIANCE),
-                    Parameter::typed(IO::class, Parameter::factory(fn($class) => new $class($input, $output))),
+                    Parameter::typed(IO::class, Parameter::factory(static fn($class) => new $class($input, $output))),
                 );
             },
             self::invokeParameters(),

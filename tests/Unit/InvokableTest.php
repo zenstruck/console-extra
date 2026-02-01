@@ -193,7 +193,7 @@ final class InvokableTest extends TestCase
                 $io->comment(\sprintf('none: %s', $none::class));
                 $io->success('Success!');
             }
-        })->addArgumentFactory(IO::class, fn($input, $output) => new CustomIO($input, $output));
+        })->addArgumentFactory(IO::class, static fn($input, $output) => new CustomIO($input, $output));
 
         TestCommand::for($command)
             ->execute()
