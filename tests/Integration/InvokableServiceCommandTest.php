@@ -11,7 +11,6 @@
 
 namespace Zenstruck\Console\Tests\Integration;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\Log\Logger;
 use Zenstruck\Console\IO;
@@ -32,6 +31,9 @@ final class InvokableServiceCommandTest extends KernelTestCase
      */
     public function can_auto_inject_services_into_invoke(): void
     {
+        $container = self::getContainer();
+        $routerClass = \get_debug_type($container->get('router'));
+
         $this->executeConsoleCommand('service-command foo bar --opt2')
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
@@ -40,7 +42,7 @@ final class InvokableServiceCommandTest extends KernelTestCase
             ->assertOutputContains(\sprintf('StyleInterface: %s', IO::class))
             ->assertOutputContains(\sprintf('none: %s', IO::class))
             ->assertOutputContains(\sprintf('LoggerInterface: %s', Logger::class))
-            ->assertOutputContains(\sprintf('RouterInterface: %s', Router::class))
+            ->assertOutputContains(\sprintf('RouterInterface: %s', $routerClass))
             ->assertOutputContains('Table: null')
             ->assertOutputContains('Parameter environment: test')
             ->assertOutputContains("arg1: 'foo'")
@@ -56,11 +58,14 @@ final class InvokableServiceCommandTest extends KernelTestCase
      */
     public function can_use_with_service_subscriber_trait(): void
     {
+        $container = self::getContainer();
+        $routerClass = \get_debug_type($container->get('router'));
+
         $this->executeConsoleCommand(ServiceSubscriberTraitCommand::class)
             ->assertSuccessful()
             ->assertOutputContains(\sprintf('IO: %s', IO::class))
             ->assertOutputContains(\sprintf('LoggerInterface: %s', Logger::class))
-            ->assertOutputContains(\sprintf('RouterInterface: %s', Router::class))
+            ->assertOutputContains(\sprintf('RouterInterface: %s', $routerClass))
         ;
     }
 }
