@@ -15,6 +15,8 @@ use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\EventDispatcher\ScopedEventDispatcher;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceCommand;
 use Zenstruck\Console\Tests\Fixture\Command\ServiceSubscriberTraitCommand;
@@ -50,5 +52,12 @@ final class Kernel extends BaseKernel
             'secret' => 'S3CRET',
             'test' => true,
         ]);
+
+        // Symfony 8.2's compiled dispatcher does not allow runtime subscribers.
+        if (\class_exists(ScopedEventDispatcher::class)) {
+            $dispatcher = $c->register('test.event_dispatcher', ScopedEventDispatcher::class);
+            $dispatcher->setDecoratedService('event_dispatcher');
+            $dispatcher->addArgument(new Reference('test.event_dispatcher.inner'));
+        }
     }
 }

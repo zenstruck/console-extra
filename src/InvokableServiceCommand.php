@@ -73,7 +73,7 @@ abstract class InvokableServiceCommand extends InvokableCommand implements Servi
                             return null; // an attribute (ie Autowire) is required for built-in types
                         }
 
-                        return new SubscribedService('invoke:'.$parameter->name, $name, $type->allowsNull(), $attributes); // @phpstan-ignore-line
+                        return new SubscribedService('invoke:'.$parameter->name, $name, $type->allowsNull(), $attributes);
                     },
                     self::invokeParameters(),
                 ),
